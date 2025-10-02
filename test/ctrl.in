@@ -1,0 +1,16 @@
+GUADALUPE RIVER NR SPRING BRANCH, TX    ! Watershed name and hydrometric station
+29.860600                       ! Outlet latitude (dec)
+-98.382800                      ! Outlet longitude (dec)
+500.0                           ! Outlet altitude in (m.a.s.l)
+3405.19                         ! Watershed area in km^2
+1948 01 01 00 00 00	            ! Starting time (yyyy mm dd hr[0 23] min[0 59] sec[0 59])
+1990 09 08 00 00 00	            ! End time (yyyy mm dd hr[0 23] min[0 59] sec[0 59])
+86400   			            ! Time step (s)
+
+runoff disch infil evapot       ! Variables to write out
+3600.			                ! Interval for writing output (s)
+
+hamon                           ! PET method ['hamon', 'priestley']
+gr4j                            ! Model's name 
+350 0.0 90 1.7                    ! Models parameters: param1 param2 param3 param4
+
