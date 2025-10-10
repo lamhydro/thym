@@ -23,12 +23,12 @@
 /*
  * Percolation from the production store
  */
-float percolation(float s, float x1){
+double percolation(double s, double x1){
     if (x1 == 0.0f) {
         printf("Error: Division by zero detected!\n");
         return NAN; // Return NaN (Not a Number) to indicate an error
     }
-    return s*(1-pow(1+pow((4*s)/(9*x1),4.0),(-1.0/4.0)));
+    return s*(1-pow(1+pow((4.0*s)/(9.0*x1),4.0),(-1.0/4.0)));
 }
 
 #elif MODEL == 2 // HBV

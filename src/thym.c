@@ -5,7 +5,7 @@
 #include "model.h"
 #include "evapotrans.h"
 #include "utils.h"
-
+#include "writeout.h"
 
 
 int main(int argc, char **argv){
@@ -85,7 +85,7 @@ int main(int argc, char **argv){
     }
     //struct tm dts[nlines];
     //read_meteo("../test/meteo.in");
-    evp.et = (float *)malloc(metini.ntimes * sizeof(float));
+    evp.et = (double *)malloc(metini.ntimes * sizeof(double));
     // Check if malloc succeeded
     if (evp.et == NULL) {
         printf("Memory allocation failed!\n");
@@ -93,8 +93,8 @@ int main(int argc, char **argv){
     }
 
     read_meteo(ininf.meteoinf, &metin, &metini, dts, evp.et);
-    printf("year: %d, month: %d, day: %d, jday: %d, tave: %f\n", metin.timestamp[0].tm_year, metin.timestamp[0].tm_mon, metin.timestamp[0].tm_mday, metin.timestamp[0].tm_yday+1, metin.tave[0]);
-    printf("year: %d, month: %d, day: %d, jday: %d, tave: %f\n", metin.timestamp[metini.ntimes-1].tm_year, metin.timestamp[metini.ntimes-1].tm_mon,metin.timestamp[metini.ntimes-1].tm_mday, metin.timestamp[metini.ntimes-1].tm_yday+1, metin.tave[metini.ntimes-1]);
+    printf("year: %d, month: %d, day: %d, jday: %d, et: %f, runoff: %f\n", metin.timestamp[0].tm_year, metin.timestamp[0].tm_mon, metin.timestamp[0].tm_mday, metin.timestamp[0].tm_yday+1, evp.et[0], metin.runoff[0]);
+    printf("year: %d, month: %d, day: %d, jday: %d, et: %f\n", metin.timestamp[metini.ntimes-1].tm_year, metin.timestamp[metini.ntimes-1].tm_mon,metin.timestamp[metini.ntimes-1].tm_mday, metin.timestamp[metini.ntimes-1].tm_yday+1, evp.et[metini.ntimes-1]);
 
     
     //--------- Compute evapotranspiration
@@ -118,18 +118,19 @@ int main(int argc, char **argv){
 	printf("******* RUNNING '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]);
 	printf("\n");
 
-    modp.Q = (float *)malloc(metini.ntimes * sizeof(float));
+    modp.runoff = (double *)malloc(metini.ntimes * sizeof(double));
     // Check if malloc succeeded
-    if (modp.Q == NULL) {
+    if (modp.runoff == NULL) {
         printf("Memory allocation failed!\n");
         return 1;
     }
 
+    modstvar *mostv = (modstvar *)malloc(metini.ntimes * sizeof(modstvar));
     // Model implementation
     #if MODEL == 1 // GR4J
    
          //gr4j(metin, modp);
-        gr4j(metin.precip, evp.et, modp.x1, modp.x2, modp.x3, modp.x4, metini.ntimes, ctrlb.area, ctrlb.dt, modp.Q);
+        gr4j(metin.precip, evp.et, &modp, metini.ntimes, mostv);
     
     #elif MODEL == 2 // HBV
     
@@ -143,7 +144,7 @@ int main(int argc, char **argv){
     #endif
    
     // Print model output
-    save_model_results(ininf.resultsoutf, metini.ntimes, metin.timestamp, evp.et, modp.Q);
+    save_model_results(ininf.resultsoutf, metini.ntimes, metin.timestamp, evp.et, mostv);
 
     // Free memory 
     freeininfo(&ininf);  // from ininf
@@ -158,12 +159,13 @@ int main(int argc, char **argv){
 /*     / *[> free(metin.srad); */
     free(dts);           // from tm structure
     free(evp.et);           // 
-    free(modp.Q);           // 
+    free(modp.runoff);           // 
+    free(mostv);           // 
     //free(ininf->tcase);
     //free(ininf->tcase);
 
     /* freememo(struct tm v1, float *v2, float *v3, float *v4, float *v5, float *v6); */
-    freememo(metin.timestamp, metin.tave, metin.tmin, metin.tmax, metin.precip, metin.disch);
+    freememo(metin.timestamp, metin.tave, metin.tmin, metin.tmax, metin.precip, metin.runoff);
     return 0;
 }
 

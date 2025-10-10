@@ -22,7 +22,7 @@
 /*
  * Catchment water exchange
  */
-float water_exch(float x2, float x3, float R){
+double water_exch(double x2, double x3, double R){
     return x2 * pow(R/x3,(7.0/2.0));
 }
 
@@ -30,8 +30,8 @@ float water_exch(float x2, float x3, float R){
 /*
  * First update of the routing store level 
  */
-float R_f1(float R, float Qa, float F){
-    float dummy = R + Qa + F;
+double R_f1(double R, double Qa, double F){
+    double dummy = R + Qa + F;
     if (dummy < 0){
         return 0;
     }else{
@@ -42,7 +42,7 @@ float R_f1(float R, float Qa, float F){
 /*
  * Outflow from the routing store
  */
-float Qr_f(float R, float x3){
+double Qr_f(double R, double x3){
     if (x3 == 0.0f) {
         printf("Error: Division by zero detected!\n");
         return NAN; // Return NaN (Not a Number) to indicate an error
@@ -54,8 +54,8 @@ float Qr_f(float R, float x3){
 /*
  * Qd
  */
-float Qd_f(float Qb, float F){
-    float dummy = Qb + F;
+double Qd_f(double Qb, double F){
+    double dummy = Qb + F;
     if (dummy < 0){
         return 0;
     }else{

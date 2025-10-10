@@ -22,73 +22,156 @@
 /*
  * UH1
  */
-int uh1_f(int x4, float *uh1){
-    if (x4 == 0) {
+int uh1_f(double x4, double **uh, int *uh_l){
+    if (x4 == 0.0) {
         printf("Error: Division by zero detected!\n");
         return 1; // Return NaN (Not a Number) to indicate an error
     }
-    int t;
-    float sh1[x4+1];
-    for (t = 0; t <= x4; t++){
-      sh1[t] = pow(t/x4,(5.0/2.0));
-    }
 
-    for (t = 1; t <= x4; t++){
-      uh1[t-1] = sh1[t]-sh1[t-1];
+    if(x4<= 1.0){
+        *uh_l = 1;
+        *uh = (double *)malloc(sizeof(double) * *uh_l);
+        *(*uh + 0) = 1.0;
+    }else{
+        *uh_l = (int)ceil(x4);
+        double *sh;
+        sh = (double *)malloc(sizeof(double) * *uh_l);
+        *uh = (double *)malloc(sizeof(double)* *uh_l);
+        int t;
+        for (t = 0; t < *uh_l; t++){
+            if (t + 1 < x4)
+            {
+                *(sh + t) = pow( (t + 1) / x4, 2.5);
+            } else {
+                *(sh + t) = 1;
+            }
+        }
+        *(*uh + 0) = *(sh + 0);
+        for (t = 1; t < *uh_l; t++)
+        {
+            *(*uh + t) = *(sh + t) - *(sh + t -1);
+        }     
+        free(sh);   
     }
+/*     for (t = 0; t <= x4i; t++){ */
+        /* if(t==0){ */
+            /* sh[t] = 0.0; */
+        /* }else if(t>0 && t<x4i){ */
+            /* sh[t] = pow(t/x4,(5.0/2.0)); */
+        /* }else{ */
+            /* sh[t] = 1.0; */
+        /* } */
+    /* } */
+
+    /* printf("x4 = %f, x4i =%d\n", x4, x4i); */
+   /*  for (t = 1; t <= x4i; t++){ */
+      /* uh[t-1] = sh[t]-sh[t-1]; */
+      /* printf("uh1[%d]=%f\n", t-1, uh[t-1]); */
+    /* } */
     return 0;
 }
 
 /*
  * UH2
  */
-int uh2_f(int x4, float *uh2){
-    if (x4 == 0) {
+int uh2_f(double x4, double **uh, int *uh_l){
+    if (x4 == 0.0) {
         printf("Error: Division by zero detected!\n");
         return 1; // Return NaN (Not a Number) to indicate an error
     }
-    int t = 0;
-    float sh2[2*x4+1];
-    while (t <= x4){
-        sh2[t] = 0.5*pow(t/x4,(5.0/2.0));
-        t++;
+
+    if (x4 <= 0.5){
+        *uh_l = 1;
+        *uh = (double *)malloc(sizeof(double) * *uh_l);
+        *(*uh + 0) = 1;
+    } else if (x4 > 0.5 && x4 < 1)
+    {
+        *uh_l = 2;
+        *uh = (double *)malloc(sizeof(double) * *uh_l);
+        *(*uh + 0) = 1 - 0.5 * pow(2 - 1 / x4, 2.5);
+        *(*uh + 1) = 1 - *(*uh + 0);
+    } else if (x4 == 1)
+    {
+        *uh_l = 2;
+        *uh = (double *)malloc(sizeof(double) * *uh_l);
+        *(*uh + 0) = 0.5 * pow(1 / x4, 2.5);
+        *(*uh + 1) = 1 - *(*uh + 0);
+    } else if (x4 > 1)
+    {
+        int t;
+        double *sh;
+        *uh_l = ((int)ceil(x4)) * 2;
+        *uh = (double *)malloc(sizeof(double) * *uh_l);
+        sh = (double *)malloc(sizeof(double) * *uh_l);
+        for (t = 0; t < *uh_l; t++)
+        {
+            if (t + 1 <= x4)
+            {
+                *(sh + t) = 0.5 * pow((t + 1) / x4, 2.5); 
+            } else if (t + 1 > x4 && t + 1 < 2 * x4)
+            {
+                *(sh + t) = 1 - 0.5 * pow(2 - (t + 1) / x4, 2.5);
+            } else {
+                *(sh + t) = 1;
+            }
+        }
+        *(*uh + 0) = *(sh + 0);
+        for (t = 1; t < *uh_l; t++)
+        {
+            *(*uh + t) = *(sh + t) - *(sh + t - 1);
+        }
+        free(sh);
     }
-    while (t > x4 && t <= 2*x4){
-        sh2[t] = 1 - 0.5*pow(2 - (t/x4),(5.0/2.0));
-        t++;
-    }
-    for (t = 1; t <= 2*x4; t++){
-      uh2[t-1] = sh2[t]-sh2[t-1];
-    }
+
+    /* int t; */
+    /* int x4i = (int)ceil(x4); */
+    /* int dummy = 2*x4i; */
+
+    /* if (x4 <= 0.5){ */
+
+        /* float sh2[1]; */
+    /* } */
+
+    /* for (t = 0; t <= dummy; t++){ */
+        /* if(t==0){ */
+            /* sh2[t] = 0.0; */
+        /* }else if(t>0 && t<=x4i){ */
+            /* sh2[t] = 0.5*pow(t/x4,(5.0/2.0)); */
+        /* }else if(t>x4i && t<dummy){ */
+            /* sh2[t] = 1.0 - 0.5*pow(2.0 - (t/x4),(5.0/2.0)); */
+        /* }else{ */
+            /* sh2[t] = 1.0; */
+        /* } */
+        /* printf("sh2[%d] = %f\n", t, sh2[t]); */
+    /* } */
+
+    /* printf("2*x4 = %f\n", 2*x4); */
+    /* for (t = 1; t <= dummy; t++){ */
+      /* uh2[t-1] = sh2[t]-sh2[t-1]; */
+      /* printf("uh2[%d]=%f\n", t-1, uh2[t-1]); */
+    /* } */
 
     return 0;
 }
 
 /*
- * Qa
+ * Q
  */
-float Qa_f(float Pr, float *uh1, int x4){   
+double Q_f(double Pr, double *uh, int uh_l, float per){   
    int t;
-   float Qa = 0;
-   float dummy = PA * Pr;
-   for (t = 0; t < x4; t++){
-       Qa += dummy*uh1[t];
+   double Q = 0;
+   double dummy = per * Pr;
+   for (t = 0; t < uh_l; t++){
+       Q += dummy*uh[t];
    }
-   return Qa;
+   return Q;
 }
 
-/*
- * Qb
- */
-float Qb_f(float Pr, float *uh2, int x4){   
-   int t;
-   float Qb = 0;
-   float dummy = PB * Pr;
-   for (t = 0; t < 2*x4; t++){
-       Qb += dummy*uh2[t];
-   }
-   return Qb;
+int Qab(double Pr, double *uh1, int uh1_l, double *uh2, int uh2_l, float pera, float perb, int i, double *qa, double *qb){   
+   return 0;
 }
+
+
 
 #elif MODEL == 2 // HBV
 

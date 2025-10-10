@@ -23,7 +23,7 @@
 /*
  * Estimate net precipitation and evapotranspiration
  */
-int pn_en(float p, float e, float *pn, float *en){
+int pn_en(double p, double e, double *pn, double *en){
     if (p >= e){
         *pn = p-e;
         *en = 0.0;
@@ -39,7 +39,7 @@ int pn_en(float p, float e, float *pn, float *en){
 /*
  * Estimate efective precipitation
  */
-double ps_f(float pn, float x1, float s){
+double ps_f(double pn, double x1, double s){
     if (x1 == 0.0f) {
         printf("Error: Division by zero detected!\n");
         return NAN; // Return NaN (Not a Number) to indicate an error
@@ -50,7 +50,7 @@ double ps_f(float pn, float x1, float s){
 /*
  * Estimate efective evapotranspiration 
  */
-double es_f(float en, float x1, float s){
+double es_f(double en, double x1, double s){
     if (x1 == 0.0f) {
         printf("Error: Division by zero detected!\n");
         return NAN; // Return NaN (Not a Number) to indicate an error

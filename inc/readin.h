@@ -46,7 +46,7 @@ typedef struct {
 
 typedef struct {
     struct tm *timestamp;
-    float *tave, *tmin, *tmax, *precip, *disch, *srad, *et;
+    double *tave, *tmin, *tmax, *precip, *runoff, *srad;
 } meteoin;
 
 typedef struct {
@@ -56,7 +56,7 @@ typedef struct {
 typedef struct {
     struct tm startdt;
     struct tm enddt;
-    float lat, lon, alt, area;
+    double lat, lon, alt, area;
     int dt;
     char name[MAX_LINE_LENGTH];
 } ctrlbasic;
@@ -64,34 +64,32 @@ typedef struct {
 typedef struct {
     int nvarout;
     char **varout;
-    float dtout;
+    int dtout;
 } ctrlout;
 
 typedef struct{
     char etmethod[10];
-    float *et;
+    double *et;
 } evapot;
 
 typedef struct {
     char model[10];
-    float *Q;
 
     #if MODEL == 1 // GR4J
     
-        float x1, x2, x3;
-        int x4;
+        double x1, x2, x3, x4;
     
     #elif MODEL == 2 // HBV
     
-        float w1, w2, w3, w4;
+        double w1, w2, w3, w4;
     
     #elif MODEL == 3 // HYMOD
     
-        float y1, y2, y3, y4;
+        double y1, y2, y3, y4;
     
     #else // IAHCRES
     
-        float z1, z2, z3, z4;
+        double z1, z2, z3, z4;
     
     #endif
 } modparam;
@@ -103,11 +101,10 @@ typedef struct {
 int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod);
 //int read_ctrl(char *ctrlf);
 int get_time_interval_meteo_in(char *meteof, struct tm sdt, struct tm edt, meteoini *metinii);
-int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, float *et); 
+int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, double *et); 
 int read_init(char *testcase, ininfo *info);
 void freeininfo(ininfo *info);
 void freectrlout(ctrlout *ctrlo);
 int allocateMemo(int size, meteoin *metin);
-void save_model_results(char *filename, int n, struct tm *timestamp, float *et, float *disch);
 
 #endif // End of include guard

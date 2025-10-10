@@ -100,22 +100,22 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
 
         // Read latitude
         fgets(line, sizeof(line), file);
-        sscanf(line, "%f", &ctrlb->lat);
+        sscanf(line, "%lf", &ctrlb->lat);
             printf("Latitude at the catchment outlet (dec): %f\n", ctrlb->lat);
 
         // Read longitude
         fgets(line, sizeof(line), file);
-        sscanf(line, "%f", &ctrlb->lon);
+        sscanf(line, "%lf", &ctrlb->lon);
             printf("Longitude at the catchment outlet (dec): %f\n", ctrlb->lon);
 
         // Read altitude
         fgets(line, sizeof(line), file);
-        sscanf(line, "%f", &ctrlb->alt);
+        sscanf(line, "%lf", &ctrlb->alt);
             printf("Altitude at the catchment outlet (m.a.s.l.): %f\n", ctrlb->alt);
 
         // Read watershed area 
         fgets(line, sizeof(line), file);
-        sscanf(line, "%f", &ctrlb->area);
+        sscanf(line, "%lf", &ctrlb->area);
         ctrlb->area*=1000000.0; // from km2 to m2
             printf("Catchment area (m^2): %0.2f\n", ctrlb->area);
        
@@ -172,8 +172,8 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
         printf("\n");
 
         fgets(line, sizeof(line), file);
-        sscanf(line, "%f", &ctrlo->dtout);
-            printf("Timestep to write output variables: %f\n", ctrlo->dtout);
+        sscanf(line, "%d", &ctrlo->dtout);
+            printf("Timestep to write output variables: %d\n", ctrlo->dtout);
 
         fscanf(file,"\n");
 
@@ -203,16 +203,16 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
 
         fgets(line, sizeof(line), file);
         #if MODEL == 1 // GR4J
-            float dummy;
-		    sscanf(line, "%f %f %f %f", &modp->x1, &modp->x2, &modp->x3, &dummy);
-            modp->x4 = floatToNextInt(dummy); // Transform a float to next smallest int
-            printf("x1 = %f, x2 = %f, x3 = %f, x4 = %d\n", modp->x1, modp->x2, modp->x3, modp->x4);
+            /* float dummy; */
+		    sscanf(line, "%lf %lf %lf %lf", &modp->x1, &modp->x2, &modp->x3, &modp->x4);
+            /* modp->x4 = floatToNextInt(dummy); // Transform a float to next smallest int */
+            printf("x1 = %lf, x2 = %lf, x3 = %lf, x4 = %lf\n", modp->x1, modp->x2, modp->x3, modp->x4);
         #elif MODEL == 2 // HBV
-		    sscanf(line, "%f %f %f %f", &modp->w1, &modp->w2, &modp->w3, &modp->w4);
+		    sscanf(line, "%lf %lf %lf %lf", &modp->w1, &modp->w2, &modp->w3, &modp->w4);
         #elif MODEL == 3 // HYMOD
-		    sscanf(line, "%f %f %f %f", &modp->y1, &modp->y2, &modp->y3, &modp->y4);
+		    sscanf(line, "%lf %lf %lf %lf", &modp->y1, &modp->y2, &modp->y3, &modp->y4);
         #else // IAHCRES
-		    sscanf(line, "%f %f %f %f", &modp->z1, &modp->z2, &modp->z3, &modp->z4);
+		    sscanf(line, "%lf %lf %lf %lf", &modp->z1, &modp->z2, &modp->z3, &modp->z4);
         #endif
 
 		fclose(file);
@@ -305,7 +305,7 @@ int get_time_interval_meteo_in(char *meteof, struct tm sdt, struct tm edt, meteo
 /*
  * Read meteo.in file
  */
-int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, float *et) {
+int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, double *et) {
 
     FILE *file = fopen(meteof, "r");
     if (file == NULL) {
@@ -338,7 +338,7 @@ int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, f
             value3_str = strtok(NULL, ",");
             value4_str = strtok(NULL, ",");
             value5_str = strtok(NULL, ",");
-            /* value6_str = strtok(NULL, ","); */
+            value6_str = strtok(NULL, ",");
             /* value7_str = strtok(NULL, ","); */
     
             // Parse the timestamp using strptime
@@ -364,9 +364,9 @@ int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, f
             metin->tmin[j] = atof(value2_str);
             metin->tmax[j] = atof(value3_str);
             metin->precip[j] = atof(value4_str);
-            metin->disch[j] = atof(value5_str);
+            et[j] = atof(value5_str);
+            metin->runoff[j] = atof(value6_str);
             /* metin->srad[j] = atof(value6_str); */
-            /* metin->et[j] = atof(value7_str); */
     
             // Print the parsed data
             /* printf("Timestamp: %04d-%02d-%02d %02d:%02d:%02d,  Temp(oC): %.2f, Precip(mm): %.2f\n", */
@@ -386,20 +386,20 @@ int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, f
  */
 int allocateMemo(int size, meteoin *metin){
     metin->timestamp = (struct tm *)malloc(size * sizeof(struct tm));
-    metin->tave = (float *)malloc(size * sizeof(float));
-    metin->tmin = (float *)malloc(size * sizeof(float));
-    metin->tmax = (float *)malloc(size * sizeof(float));
-    metin->precip = (float *)malloc(size * sizeof(float));
-    metin->disch = (float *)malloc(size * sizeof(float));
+    metin->tave = (double *)malloc(size * sizeof(double));
+    metin->tmin = (double *)malloc(size * sizeof(double));
+    metin->tmax = (double *)malloc(size * sizeof(double));
+    metin->precip = (double *)malloc(size * sizeof(double));
+    metin->runoff = (double *)malloc(size * sizeof(double));
     // Check if malloc succeeded
-    if (!metin->timestamp || !metin->tave || !metin->tmin || !metin->tmax || !metin->precip || !metin->disch) {
+    if (!metin->timestamp || !metin->tave || !metin->tmin || !metin->tmax || !metin->precip || !metin->runoff) {
         perror("malloc failed");
         free(metin->timestamp);
         free(metin->tave);
         free(metin->tmin);
         free(metin->tmax);
         free(metin->precip);
-        free(metin->disch);
+        free(metin->runoff);
         /* free(metin->srad); */
         return 1;
     }
@@ -408,34 +408,4 @@ int allocateMemo(int size, meteoin *metin){
 }
 
 
-/*
- * Print main model results
- */
-void save_model_results(char *filename, int n, struct tm *timestamp, float *et, float *disch){
 
-    FILE *fp = fopen(filename, "w");
-    if (fp == NULL) {
-        perror("Error opening file");
-        return;
-    }
-
-    // Write header
-    fprintf(fp, "datetime,et_mm,disch_s_m3s\n");
-
-    unsigned int i;
-    char buffer[30];
-    for (i = 0; i < n; i++) {
-        /* printf("year: %d, month: %d, day: %d, jday: %d\n", timestamp[i].tm_year, timestamp[i].tm_mon,timestamp[i].tm_mday, timestamp[i].tm_yday+1); */
-        // Format timestamp as YYYY-MM-DD HH:MM:SS
-        timestamp[i].tm_year -= 1900;
-        timestamp[i].tm_mon -= 1;
-        strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timestamp[i]);
-
-        fprintf(fp, "%s,%.4f,%.4f\n", buffer, et[i], disch[i]);
-
-    }
-
-    fclose(fp);
-    /* printf("Time series written to %s\n", filename); */
-
-}

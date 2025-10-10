@@ -353,7 +353,7 @@ void print_centered(const char *text, int width) {
 /*
  * Free memory from a series of 1d arrays
  */
-void freememo(struct tm *v1, float *v2, float *v3, float *v4, float *v5, float *v6){
+void freememo(struct tm *v1, double *v2, double *v3, double *v4, double *v5, double *v6){
    free(v1); 
    free(v2); 
    free(v3); 
@@ -365,10 +365,10 @@ void freememo(struct tm *v1, float *v2, float *v3, float *v4, float *v5, float *
 /*
  *  Approximate a float number to next smaller integer e.g. 4.2 to 5
  */
-int floatToNextInt(float x){
-    int nextInt;
-    return nextInt = (int)ceil(x);
-}
+/* int floatToNextInt(float x){ */
+    /* int nextInt; */
+    /* return nextInt = (int)ceil(x); */
+/* } */
 
 /*
  * Read a line from a text file

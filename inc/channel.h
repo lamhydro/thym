@@ -16,6 +16,7 @@
  * =====================================================================================
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>  
 
 #define PA 0.9 // Proportion of flow toward the routing store
@@ -24,17 +25,16 @@
 #if MODEL == 1 // GR4J
                
 typedef struct{
-    float Qa, Qb;
+    double Qa, Qb;
 } chstore;
 
 
 /*
  * Function prototypes
  */
-int uh1_f(int x4, float *uh1);
-int uh2_f(int x4, float *uh2);
-float Qa_f(float Pr, float *uh1, int x4);   
-float Qb_f(float Pr, float *uh2, int x4);   
+int uh1_f(double x4, double **uh, int *uh_l);
+int uh2_f(double x4, double **uh, int *uh_l);
+double Q_f(double Pr, double *uh, int uh_l, float per);   
 
 #elif MODEL == 2 // HBV
 

@@ -19,4 +19,13 @@ make
 cd "$orig_dir" || exit 1
 
 # Execute the code
-./thym test
+./thym test2
+
+# Plotting 
+# Change to tool dir
+cd "./tools" || exit 1
+
+# Plot model results
+./plot_in_out.py ../test2/
+
+

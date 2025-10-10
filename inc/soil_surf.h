@@ -21,13 +21,13 @@
 #if MODEL == 1 // GR4J
 
 typedef struct{
-    float perc, s;
+    double perc, s;
 } ssstore;
 
 /*
  * Function prototypes
  */
-float percolation(float s, float x1);
+double percolation(double s, double x1);
 
 #elif MODEL == 2 // HBV
 

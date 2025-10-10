@@ -21,89 +21,141 @@
 
 //int gr4j(float p, float e, float x1, float x2, float x3, int x4){
 /* int gr4j(meteoin *metin, evapot *evp, modparam modp, int ntimes){ */
-int gr4j(float *precip, float *et, float x1, float x2, float x3, int x4, int ntimes, float area, int dt, float *disch_s){
+int gr4j(double *precip, double *et, modparam *modp, int ntimes, modstvar *mostv){
 
-/*     float x1 = modp.x1; */
-    /* float x2 = modp.x2; */
-    /* float x3 = modp.x3; */
-    /* int x4 = modp.x4; */
-
-    float p, e, pn, en, ps, es, s, perc, pr, f, r, qr, qa, qb, qd;
-    float uh1[x4], uh2[2*x4];
+/*         double pn; */
+        /* double ps; */
+        /* double pr; */
+        /* double en; */
+        /* double es; */
+        /* double s; */
+        /* double r; */
+        /* double perc; */
+        /* double f; */
+        /* double qa; */
+        /* double qb; */
+        /* double qr; */
+        /* double qd; */
+        /* double q; */
+ 
+    /* double p, e, pn, en, ps, es, s, perc, pr, f, r, qr, qa, qb, qd; */
+    double p, e;
 
     // Array of UH1 values
-    uh1_f(x4, uh1);
+    double *uh1;
+    int uh1_l;
+    uh1_f(modp->x4, &uh1, &uh1_l);
 
     // Array of UH2 values
-    uh2_f(x4, uh2);
+    double *uh2;
+    int uh2_l;
+    uh2_f(modp->x4, &uh2, &uh2_l);
 
-    s = 0.0; // Initializing the production store level
-    r = 0.0; // Initializing the routing store level
+    mostv[i]->s = 0.2*modp->x1; // Initializing the production store level
+    mostv[i]->r = 0.1*modp->x3; // Initializing the routing store level
 
     unsigned int i;
-    float dummy = 0.001*area/dt;
-    for(i=0; i<ntimes; i++){ // Temporal loop
+    /* double dummy = 0.001*area/dt; */
+    for(i = 0; i < ntimes; i++){ // Temporal loop
         p = precip[i];
         e = et[i];
 
         // INTERCEPTION
         // Net precipitation and evapotranspiration 
-        pn_en(p,  e,  &pn,  &en);
-
-        // Precipitation added to the production store
-        ps = ps_f(pn, x1, s);
-
-        // Evapotranspiration added to the production store
-        es = es_f(en, x1, s);
+        pn_en(p,  e,  &mostv[i]->pn,  &mostv[i]->en);
+        if (p > e){
+            // Precipitation added to the production store
+            mostv[i]->ps = ps_f(mostv[i]->pn, modp->x1, mostv[i]->s);
+            mostv[i]->es = 0.0;
+        }else{
+            // Evapotranspiration added to the production store
+            mostv[i]->es = es_f(mostv[i]->en, modp->x1, mostv[i]->s);
+            mostv[i]->ps = 0.0;
+        }
         
         // SOIL SURFACE
         // Update water level in the production store
-        s = s - es + ps;
-        /* Note that s must be less or equal to x1 */
-        if (s>x1){ 
-            s=x1;
+        mostv[i]->s = mostv[i]->s - mostv[i]->es + mostv[i]->ps;
+        /* Note that s must be less or equal to modp->x1 */
+        if (mostv[i]->s > modp->x1){ 
+            mostv[i]->s = modp->x1;
         }
-
         // Estimate percolation from the production store
-        perc = percolation(s, x1);
-
+        mostv[i]->perc = percolation(mostv[i]->s, modp->x1);
         // Final update of water level in the production store
-        s = s - perc;
-        /* Note that s must be less or equal to x1 */
-        if (s>x1){
-            s=x1;
+        mostv[i]->s = mostv[i]->s - mostv[i]->perc;
+        /* Note that s must be less or equal to modp->x1 */
+        if (mostv[i]-> s > modp->x1){
+            mostv[i]->s = modp->x1;
         }
-
-        // ROUTING
         // Water height that reach the routing functions
-        pr = perc + pn - ps;
-        
+        mostv[i]->pr = mostv[i]->perc + mostv[i]->pn - mostv[i]->ps;
+    }
+
+    // ROUTING
+    int t;
+    for(i = 0; i < ntimes; i++){ // Temporal loop
+        mostv[i]->qb = 0.0;
+        mostv[i]->qa = 0.0;
+        if (i + 1 >= uh2_l)
+        {
+            for (t = 0; t < uh1_l; t++)
+            {
+                mostv[i]->qa += *(uh1 + t) * mostv[i-t]->pr * pera; 
+            }
+            for (t = 0; t < uh2_l; t++)
+            {
+                mostv[i]->qb += *(uh2 + t) * mostv[i-t]->pr * perb;
+            }
+        } else if (i + 1 >= uh1_l && i + 1 < uh2_l)
+        {
+            for (t = 0; t < uh1_l; t++)
+            {
+                mostv[i]->qa += *(uh1 + t) * mostv[i-t]->pr * pera; 
+            }
+            for (t = 0; t < i + 1; t++)
+            {
+                mostv[i]->qb += *(uh2 + t) * mostv[i-t]->pr * perb;
+            }
+        } else if (i + 1 < uh1_l)
+        {
+            for (t = 0; t < i + 1; t++)
+            {
+                mostv[i]->qa += *(uh1 + t) * mostv[i-t]->pr * pera; 
+            }
+            for (t = 0; t < i + 1; t++)
+            {
+                mostv[i]->qb += *(uh2 + t) * mostv[i-t]->pr * perb;
+            }
+        }
+       
         // Catchment water exchage
-        f = water_exch(x2, x3, r);
+        mostv[i]->f = water_exch(modp->x2, modp->x3, mostv[i]->r);
 
         // Inflow to the routing store
-        qa = Qa_f(pr, uh1, x4);   
+        /* qa = Q_f(pr, uh1, uh1_l, PA);    */
         
         // Update the routing store water level
-        r = R_f1(r, qa, f);
+        mostv[i]->r = R_f1(mostv[i]->r, mostv[i]->qa, mostv[i]->f);
         
         // Outflow from the routing store
-        qr = Qr_f(r, x3);
+        mostv[i]->qr = Qr_f(mostv[i]->r, modp->x3);
         
         // Final update the routing store water level
-        r = r - qr;
-        /* Note that r must be less or equal to x3 */
-        if (r>x3){
-            r=x3;
+        mostv[i]->r = mostv[i]->r - mostv[i]->qr;
+        /* Note that r must be less or equal to modp->x3 */
+        if (mostv[i]->r > modp->x3){
+            mostv[i]->r = modp->x3;
         }
        
         // Direct outflow
-        qb = Qb_f(pr, uh2, x4);   
-        qd = Qd_f(qb, f);
+        /* qb = Q_f(pr, uh2, uh2_l, PB);    */
+        mostv[i]->qd = Qd_f(mostv[i]->qb, mostv[i]->f);
         
         // Total streamflow
-        disch_s[i] = (qr + qd)*dummy; // Discharge in m^3/s
-        /* printf("The streamflow is:%f\n",disch_s[i]); */
+        /* runoff_s[i] = (qr + qd)*dummy; // Discharge in m^3/s */
+        mostv[i]->q = (mostv[i]->qr + mostv[i]->qd); // Discharge in m^3/s
+        /* printf("The streamflow is:%f\n",runoff_s[i]); */
         
         i++;
     }

@@ -22,15 +22,15 @@
 #if MODEL == 1 // GR4J
 
 typedef struct{
-    float pn, en, ps, es;
+    double pn, en, ps, es;
 } icstore;
 
 /*
  * Function prototypes
  */
-int pn_en(float p, float e, float *pn, float *en);
-double ps_f(float pn, float x1, float s);
-double es_f(float en, float x1, float s);
+int pn_en(double p, double e, double *pn, double *en);
+double ps_f(double pn, double x1, double s);
+double es_f(double en, double x1, double s);
 
 #elif MODEL == 2 // HBV
 

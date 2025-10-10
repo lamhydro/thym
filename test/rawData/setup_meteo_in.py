@@ -85,7 +85,8 @@ def write_to_file(output_file, data1, data2, header=None):
             tmin = float(row2[1])
             tmax = float(row2[0])
             precip = float(row1[3])
-            disch = float(row1[4])*basin_area*0.001/(24*60*60)
+            #disch = float(row1[4])*basin_area*0.001/(24*60*60)
+            disch = float(row1[4])
 
             values = [tave, tmin, tmax, precip, disch]
 
