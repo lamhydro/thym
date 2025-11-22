@@ -15,6 +15,10 @@
  *
  * =====================================================================================
  */
+
+#ifndef CHANNEL_H  // Check if MY_HEADER_H is not defined
+#define CHANNEL_H  // Define MY_HEADER_H
+                   
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>  
@@ -24,9 +28,9 @@
                
 #if MODEL == 1 // GR4J
                
-typedef struct{
-    double Qa, Qb;
-} chstore;
+/* typedef struct{ */
+    /* double Qa, Qb; */
+/* } chstore; */
 
 
 /*
@@ -34,7 +38,8 @@ typedef struct{
  */
 int uh1_f(double x4, double **uh, int *uh_l);
 int uh2_f(double x4, double **uh, int *uh_l);
-double Q_f(double Pr, double *uh, int uh_l, float per);   
+void print_uh(const double *uh, const int uh_l);
+// double Q_f(double Pr, double *uh, int uh_l, float per);   
 
 #elif MODEL == 2 // HBV
 
@@ -47,6 +52,6 @@ double Q_f(double Pr, double *uh, int uh_l, float per);
 
 #endif
 
-
+#endif // End of include guard
 
 

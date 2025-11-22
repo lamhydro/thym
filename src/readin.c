@@ -77,7 +77,7 @@ void freectrlout(ctrlout *ctrlo){
  * Read ctrl.in file exept model name and parameters
  */
 //int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, ctrlparam *ctrlp){
-int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod){
+int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod, snowparam *snowp){
 
     char line[MAX_LINE_LENGTH];
 
@@ -195,6 +195,8 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
         sscanf(line, "%9s", etmethod);
         printf("Evapotranspiration method: %s\n", etmethod);
 
+        fscanf(file,"\n");
+
         // Read hydrological model name
         fgets(line, sizeof(line), file);
         sscanf(line, "%9s", modp->model);
@@ -213,6 +215,17 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
 		    sscanf(line, "%lf %lf %lf %lf", &modp->y1, &modp->y2, &modp->y3, &modp->y4);
         #else // IAHCRES
 		    sscanf(line, "%lf %lf %lf %lf", &modp->z1, &modp->z2, &modp->z3, &modp->z4);
+        #endif
+
+        fscanf(file,"\n");
+
+        // Read snow model parameters
+        fgets(line, sizeof(line), file);
+        #if SNOWM == 0 // NO SNOW CALCULATIONS
+        #elif SNOWM == 1 // 
+		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf", &snowp->trs, &snowp->tmlt, &snowp->sno50, &snowp->sno100, &snowp->ls, &snowp->bmlt6, &snowp->bmlt12);
+            printf("trs = %lf, tmlt = %lf, sno50 = %lf, sno100 = %lf, ls = %lf, bmlt6 = %lf, bmlt12 = %lf\n", snowp->trs, snowp->tmlt, snowp->sno50, snowp->sno100, snowp->ls, snowp->bmlt6, snowp->bmlt12);
+        #else // 
         #endif
 
 		fclose(file);

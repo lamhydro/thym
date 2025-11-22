@@ -12,6 +12,7 @@ LINK_NAME = ../thym
 
 # Define other varible
 MODEL = 1
+SNOWM = 1
 
 # List of source files
 SOURCES = $(wildcard $(SRCDIR)/*.c)
@@ -31,7 +32,7 @@ $(TARGET): $(OBJECTS)
 
 # Rule for compiling the source files into object files
 $(BINDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -DMODEL=$(MODEL) -c $< -o $@
+	$(CC) $(CFLAGS) -DMODEL=$(MODEL) -DSNOWM=$(SNOWM) -c $< -o $@
 	
 # Create symbolic link
 symlink:

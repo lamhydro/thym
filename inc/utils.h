@@ -16,6 +16,9 @@
  * =====================================================================================
  */
 
+#ifndef UTILS_H  // Check if MY_HEADER_H is not defined
+#define UTILS_H  // Define MY_HEADER_H
+                     
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +29,6 @@
  * Defining constants
  */
 #define BUFFER_LENGTH 1024
-
 
 /*
  * Function prototypes
@@ -43,3 +45,6 @@ void print_box_banner(const char *title, const char *author, const char *organiz
 void print_centered(const char *text, int width);
 void freememo(struct tm *v1, double *v2, double *v3, double *v4, double *v5, double *v6);
 // int floatToNextInt(float x);
+
+
+#endif // End of include guard

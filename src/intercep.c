@@ -44,7 +44,8 @@ double ps_f(double pn, double x1, double s){
         printf("Error: Division by zero detected!\n");
         return NAN; // Return NaN (Not a Number) to indicate an error
     }
-    return x1 * (1 - pow(s/x1,2.0)) * tanh(pn/x1) / (1 + ( (s/x1) * tanh(pn/x1)) );
+    /* return x1 * (1 - pow(s/x1,2.0)) * tanh(pn/x1) / (1 + ( (s/x1) * tanh(pn/x1)) ); */ //Original from paper
+    return x1 * (1 - pow(s/x1,2.0)) * tanh(pn/x1) / (1 +  (s/x1) + tanh(pn/x1)) ;
 }
 
 /*

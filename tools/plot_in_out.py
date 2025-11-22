@@ -62,7 +62,7 @@ class TimeSeriesApp:
         print(self.datares.head())
         plt.figure(figsize=(10, 5))
         plt.plot(self.datamet["datetime"], self.datamet["runoff_mm"], marker=".", linestyle="-",color="red", label="Obs.")
-        plt.plot(self.datares["datetime"], self.datares["runoff_s_mm"],marker=".", linestyle="-", color="blue", label="Sim.")
+        plt.plot(self.datares["datetime"], self.datares["q_mm"],marker=".", linestyle="-", color="blue", label="Sim.")
         plt.title("Time Series Plot")
         plt.xlabel("Day")
         plt.ylabel("Q (m^3/s)")

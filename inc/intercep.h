@@ -16,6 +16,9 @@
  * =====================================================================================
  */
 
+#ifndef INTERCEP_H  // Check if MY_HEADER_H is not defined
+#define INTERCEP_H  // Define MY_HEADER_H
+                   
 #include <stdio.h>
 #include <math.h>
 
@@ -43,4 +46,4 @@ double es_f(double en, double x1, double s);
 
 #endif
 
-
+#endif // End of include guard

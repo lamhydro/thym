@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "readin.h"
-#include "model.h"
-#include "evapotrans.h"
 #include "utils.h"
+#include "snow.h"
+#include "readin.h"
 #include "writeout.h"
+#include "evapotrans.h"
+#include "model.h"
 
 
 int main(int argc, char **argv){
@@ -31,7 +32,8 @@ int main(int argc, char **argv){
     ctrlout ctrlo;
     modparam modp;
     evapot evp;
-    read_ctrl(ininf.ctrlinf, &ctrlb, &ctrlo, &modp, evp.etmethod);
+    snowparam snowp;
+    read_ctrl(ininf.ctrlinf, &ctrlb, &ctrlo, &modp, evp.etmethod, &snowp);
     //read_ctrl(ininf.ctrlinf);
 
     //--------- Read meteo.in file
@@ -114,23 +116,35 @@ int main(int argc, char **argv){
     /* int enddti = get_time_index(nlines, dts, ctrlb.enddt); */
     /* printf("simulation end datetime index:%d\n", enddti); */
 
+    printf("\n");
+	printf("******* RUNNING SNOW MODEL '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]);
+	printf("\n");
+    snowstvar sstvar;
+    allocateMemoSnow(metini.ntimes, &sstvar);
+    #if SNOWM == 0 // 
+        rainOrSnow_f0(metini.ntimes, metin.precip, sstvar.rainfall, sstvar.snowfall);
+    #elif SNOWM == 1 //
+        rainOrSnow_f1(metini.ntimes, metin.precip, snowp.trs, metin.tave, sstvar.rainfall, sstvar.snowfall);
+        snowModel(metini.ntimes, metin.timestamp, sstvar.snowfall, metin.tave, metin.tmax, evp.et, sstvar.tsnow, sstvar.sno, sstvar.snomlt, sstvar.eres, &snowp);
+    #endif
+
 	printf("\n");
 	printf("******* RUNNING '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]);
 	printf("\n");
 
-    modp.runoff = (double *)malloc(metini.ntimes * sizeof(double));
-    // Check if malloc succeeded
-    if (modp.runoff == NULL) {
-        printf("Memory allocation failed!\n");
-        return 1;
-    }
+    /* modp.runoff = (double *)malloc(metini.ntimes * sizeof(double)); */
+    /* // Check if malloc succeeded */
+    /* if (modp.runoff == NULL) { */
+        /* printf("Memory allocation failed!\n"); */
+        /* return 1; */
+    /* } */
 
-    modstvar *mostv = (modstvar *)malloc(metini.ntimes * sizeof(modstvar));
     // Model implementation
+    modstvar *mostv = (modstvar *)malloc(metini.ntimes * sizeof(modstvar));
     #if MODEL == 1 // GR4J
-   
          //gr4j(metin, modp);
-        gr4j(metin.precip, evp.et, &modp, metini.ntimes, mostv);
+        /* gr4j(metin.precip, evp.et, &modp, metini.ntimes, mostv); */
+        gr4j(sstvar.rainfall, sstvar.snomlt, sstvar.eres, &modp, metini.ntimes, mostv);
     
     #elif MODEL == 2 // HBV
     
@@ -144,7 +158,7 @@ int main(int argc, char **argv){
     #endif
    
     // Print model output
-    save_model_results(ininf.resultsoutf, metini.ntimes, metin.timestamp, evp.et, mostv);
+    save_model_results(ininf.resultsoutf, metini.ntimes, metin.timestamp, evp.et, mostv, &sstvar);
 
     // Free memory 
     freeininfo(&ininf);  // from ininf
@@ -159,13 +173,16 @@ int main(int argc, char **argv){
 /*     / *[> free(metin.srad); */
     free(dts);           // from tm structure
     free(evp.et);           // 
-    free(modp.runoff);           // 
+    /* free(modp.runoff);           //  */
     free(mostv);           // 
     //free(ininf->tcase);
     //free(ininf->tcase);
 
     /* freememo(struct tm v1, float *v2, float *v3, float *v4, float *v5, float *v6); */
     freememo(metin.timestamp, metin.tave, metin.tmin, metin.tmax, metin.precip, metin.runoff);
+    freeMemoSnow(&sstvar);
+
+
     return 0;
 }
 

@@ -24,6 +24,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "snow.h"
+
 /*
  * Defining object types
  */
@@ -64,6 +66,7 @@ typedef struct {
  * Function prototypes
  */
 // void save_model_results(char *filename, int n, struct tm *timestamp, double *et, double *runoff);
-void save_model_results(char *filename, int n, struct tm *timestamp, double *et, modstvar *mostv);
+void save_model_results(char *filename, const int n, struct tm *timestamp, const double *et, const modstvar *mostv, const snowstvar *sstvar);
+// void save_model_results(char *filename, const int n, struct tm *timestamp, const double *et, const modstvar *mostv);
 
 #endif // End of include guard

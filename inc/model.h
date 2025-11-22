@@ -34,7 +34,9 @@
     // int gr4j(meteoin *metin, evapot *evp, modparam modp, int ntimes);
     // int gr4j(double *precip, double *et, double x1, double x2, double x3, double x4, int ntimes, double *runoff_s);
     // int gr4j(double *precip, double *et, double x1, double x2, double x3, double x4, int ntimes, double *runoff_s, modstvar *mostv);
-    int gr4j(double *precip, double *et, modparam *modp, int ntimes, modstvar *mostv);
+    // int gr4j(double *precip, double *et, modparam *modp, int ntimes, modstvar *mostv);
+    // int gr4j(const double *precip, const double *et, const modparam *modp, const int ntimes, modstvar *mostv);
+    int gr4j(const double *rainfall, const double *snomlt, const double *eres, const modparam *modp, const int ntimes, modstvar *mostv);
 
 #elif MODEL == 2 // HBV
 

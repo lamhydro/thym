@@ -15,6 +15,10 @@
  *
  * =====================================================================================
  */
+
+#ifndef AQUIFER_H  // Check if MY_HEADER_H is not defined
+#define AQUIFER_H  // Define MY_HEADER_H
+                      
 #include <stdio.h>
 #include <math.h>  
 
@@ -43,6 +47,5 @@ double Qd_f(double Qb, double F);
 
 #endif
 
-
-
+#endif // End of include guard
 

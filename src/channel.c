@@ -155,21 +155,28 @@ int uh2_f(double x4, double **uh, int *uh_l){
 }
 
 /*
- * Q
+ * Printing UH
  */
-double Q_f(double Pr, double *uh, int uh_l, float per){   
-   int t;
-   double Q = 0;
-   double dummy = per * Pr;
-   for (t = 0; t < uh_l; t++){
-       Q += dummy*uh[t];
-   }
-   return Q;
+void print_uh(const double *uh, const int uh_l){
+    unsigned int i;
+    for (i = 0; i < uh_l; i++)
+    {
+        printf("%d\t%f\n", i + 1, *(uh + i));
+    }
 }
 
-int Qab(double Pr, double *uh1, int uh1_l, double *uh2, int uh2_l, float pera, float perb, int i, double *qa, double *qb){   
-   return 0;
-}
+/*
+ * Q
+ */
+/* double Q_f(double Pr, double *uh, int uh_l, float per){    */
+   /* int t; */
+   /* double Q = 0; */
+   /* double dummy = per * Pr; */
+   /* for (t = 0; t < uh_l; t++){ */
+       /* Q += dummy*uh[t]; */
+   /* } */
+   /* return Q; */
+/* } */
 
 
 

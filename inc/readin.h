@@ -26,6 +26,7 @@
 #include <time.h>
 
 #include "utils.h"
+// #include "snow.h"
 // #include "evapotrans.h"
 
 /*
@@ -72,6 +73,21 @@ typedef struct{
     double *et;
 } evapot;
 
+typedef struct{
+    #if SNOWM == 0 // 
+    #elif SNOWM == 1 // 
+        double trs;
+        double tmlt;
+        double sno50;
+        double sno100;
+        double ls;
+        double bmlt6;
+        double bmlt12;
+    #endif
+} snowparam;
+
+
+
 typedef struct {
     char model[10];
 
@@ -98,7 +114,7 @@ typedef struct {
 /*
  * Function prototypes
  */
-int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod);
+int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod, snowparam *snowp);
 //int read_ctrl(char *ctrlf);
 int get_time_interval_meteo_in(char *meteof, struct tm sdt, struct tm edt, meteoini *metinii);
 int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, double *et); 

@@ -21,7 +21,7 @@
 /*
  * Print main model results
  */
-void save_model_results(char *filename, int n, struct tm *timestamp, double *et, modstvar *mostv){
+void save_model_results(char *filename, const int n, struct tm *timestamp, const double *et, const modstvar *mostv, const snowstvar *sstvar){
 
     FILE *fp = fopen(filename, "w");
     if (fp == NULL) {
@@ -30,7 +30,12 @@ void save_model_results(char *filename, int n, struct tm *timestamp, double *et,
     }
 
     // Write header
-    fprintf(fp, "datetime,et_mm,pn_mm,ps_mm,pr_mm,en_mm,es_mm,s_mm,r_mm,perc_mm,f_mm,qa_mm,qb_mm,qr_mm,qd_mm,q_mm\n");
+    #if SNOWM == 0 // NO SNOW CALCULATIONS
+        fprintf(fp, "datetime,et_mm,pn_mm,ps_mm,pr_mm,en_mm,es_mm,s_mm,r_mm,perc_mm,f_mm,qa_mm,qb_mm,qr_mm,qd_mm,q_mm\n");
+
+    #elif SNOWM == 1 // 
+        fprintf(fp, "datetime,rainfall_mm,snowfall_mm,sno_mm,tsnow_oC,snomlt_mm,eres_mm,et_mm,pn_mm,ps_mm,pr_mm,en_mm,es_mm,s_mm,r_mm,perc_mm,f_mm,qa_mm,qb_mm,qr_mm,qd_mm,q_mm\n");
+    #endif
 
     unsigned int i;
     char buffer[30];
@@ -41,10 +46,15 @@ void save_model_results(char *filename, int n, struct tm *timestamp, double *et,
         timestamp[i].tm_mon -= 1;
         strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timestamp[i]);
 
-        fprintf(fp, "%s,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f\n", buffer, et[i], mostv[i]->pn, mostv[i]->ps, mostv[i]->pr, mostv[i]->en, mostv[i]->es, mostv[i]->s, mostv[i]->r, mostv[i]->perc, mostv[i]->f, mostv[i]->qa, mostv[i]->qb, mostv[i]->qr, mostv[i]->qd, mostv[i]->q);
 
+        #if SNOWM == 0 // NO SNOW CALCULATIONS
+            fprintf(fp, "%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n", buffer, et[i], mostv[i].pn, mostv[i].ps, mostv[i].pr, mostv[i].en, mostv[i].es, mostv[i].s, mostv[i].r, mostv[i].perc, mostv[i].f, mostv[i].qa, mostv[i].qb, mostv[i].qr, mostv[i].qd, mostv[i].q);
+
+        #elif SNOWM == 1 // 
+            fprintf(fp, "%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n", buffer, sstvar->rainfall[i], sstvar->snowfall[i], sstvar->sno[i], sstvar->tsnow[i], sstvar->snomlt[i], sstvar->eres[i], et[i], mostv[i].pn, mostv[i].ps, mostv[i].pr, mostv[i].en, mostv[i].es, mostv[i].s, mostv[i].r, mostv[i].perc, mostv[i].f, mostv[i].qa, mostv[i].qb, mostv[i].qr, mostv[i].qd, mostv[i].q);
     }
 
+        #endif
     fclose(fp);
     /* printf("Time series written to %s\n", filename); */
 
