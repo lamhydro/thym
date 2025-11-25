@@ -338,7 +338,7 @@ int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, d
     // Read the meteo data    
     unsigned int i = NHEADER_LINES_METEOIN;
     unsigned int j = 0;
-    char *timestamp_str, *value1_str, *value2_str, *value3_str, *value4_str, *value5_str, *value6_str, *value7_str;
+    char *timestamp_str, *value1_str, *value2_str, *value3_str, *value4_str, *value5_str, *value6_str;
     /* printf("sdt: %d, edt: %d, ntimes: %d \n", metini->sdt, metini->edt, metini->ntimes);  */
     while (fgets(line, sizeof(line), file)) {
         if (i >= metini->sdt && i <= metini->edt){
@@ -352,7 +352,6 @@ int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, d
             value4_str = strtok(NULL, ",");
             value5_str = strtok(NULL, ",");
             value6_str = strtok(NULL, ",");
-            /* value7_str = strtok(NULL, ","); */
     
             // Parse the timestamp using strptime
             strptime(timestamp_str, "%Y-%m-%d %H:%M:%S", &metin->timestamp[j]);

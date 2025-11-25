@@ -46,15 +46,14 @@ void save_model_results(char *filename, const int n, struct tm *timestamp, const
         timestamp[i].tm_mon -= 1;
         strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timestamp[i]);
 
-
         #if SNOWM == 0 // NO SNOW CALCULATIONS
             fprintf(fp, "%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n", buffer, et[i], mostv[i].pn, mostv[i].ps, mostv[i].pr, mostv[i].en, mostv[i].es, mostv[i].s, mostv[i].r, mostv[i].perc, mostv[i].f, mostv[i].qa, mostv[i].qb, mostv[i].qr, mostv[i].qd, mostv[i].q);
 
         #elif SNOWM == 1 // 
             fprintf(fp, "%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n", buffer, sstvar->rainfall[i], sstvar->snowfall[i], sstvar->sno[i], sstvar->tsnow[i], sstvar->snomlt[i], sstvar->eres[i], et[i], mostv[i].pn, mostv[i].ps, mostv[i].pr, mostv[i].en, mostv[i].es, mostv[i].s, mostv[i].r, mostv[i].perc, mostv[i].f, mostv[i].qa, mostv[i].qb, mostv[i].qr, mostv[i].qd, mostv[i].q);
+        #endif
     }
 
-        #endif
     fclose(fp);
     /* printf("Time series written to %s\n", filename); */
 

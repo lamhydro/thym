@@ -37,6 +37,8 @@ typedef struct{
 } snowstvar;
 
  
+int allocateMemoSnow(int size, snowstvar *sstvar);
+void freeMemoSnow(snowstvar *sstvar);
 #if SNOWM == 0 // NO SNOW CALCULATIONS
     void rainOrSnow_f0(const int ntimes, const double *precip, double *rainfall, double *snowfall);
 #elif SNOWM == 1 // 
@@ -47,8 +49,6 @@ typedef struct{
     void rainOrSnow_f1(const int ntimes, const double *precip, double trs, double *tav, double *rainfall, double *snowfall);
     void snowModel(const int ntimes, struct tm *timestamp, double *snowfall, double *tav, double *tmax, double *ep, double *tsnow, double *sno, double *snomlt, double *eres, snowparam *snowp);
     // void snowModel(int dn, double snowfall, double tav, double tmax, double ep, double tsnow0, double sno0, double *tsnow, double *sno, double *snomlt, double *eres, double sno50, double sno100, double ls, double bmlt6, double bmlt12, double tmlt);
-    int allocateMemoSnow(int size, snowstvar *sstvar);
-    void freeMemoSnow(snowstvar *sstvar);
                 
 #endif
 

@@ -86,13 +86,13 @@ int gr4j(const double *rainfall, const double *snomlt, const double *eres, const
     double *uh1;
     int uh1_l;
     uh1_f(modp->x4, &uh1, &uh1_l);
-    print_uh(uh1, uh1_l);
+    /* print_uh(uh1, uh1_l); */
 
     // Array of UH2 values
     double *uh2;
     int uh2_l;
     uh2_f(modp->x4, &uh2, &uh2_l);
-    print_uh(uh2, uh2_l);
+    /* print_uh(uh2, uh2_l); */
 
     // ROUTING
     double r0 = 0.1*modp->x3; // Initializing the routing store level

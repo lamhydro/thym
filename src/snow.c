@@ -17,7 +17,43 @@
  */
 
 #include "snow.h"
+/*
+ * Allocate memory fo the snowstvar struct
+ */
+int allocateMemoSnow(int size, snowstvar *sstvar){
+    sstvar->rainfall = (double *)malloc(size * sizeof(double));
+    sstvar->snowfall = (double *)malloc(size * sizeof(double));
+    sstvar->sno = (double *)malloc(size * sizeof(double));
+    sstvar->tsnow = (double *)malloc(size * sizeof(double));
+    sstvar->snomlt= (double *)malloc(size * sizeof(double));
+    sstvar->eres= (double *)malloc(size * sizeof(double));
+    // Check if malloc succeeded
+    if (!sstvar->rainfall || !sstvar->snowfall || !sstvar->sno || !sstvar->tsnow || !sstvar->snomlt || !sstvar->eres) {
+        perror("malloc failed");
+        free(sstvar->rainfall);
+        free(sstvar->snowfall);
+        free(sstvar->sno);
+        free(sstvar->tsnow);
+        free(sstvar->snomlt);
+        free(sstvar->eres);
+        return 1;
+    }
 
+    return 0;
+}
+
+/*
+ * Free memory fo the snowstvar struct
+ */
+void freeMemoSnow(snowstvar *sstvar){
+    free(sstvar->rainfall);
+    free(sstvar->snowfall);
+    free(sstvar->sno);
+    free(sstvar->tsnow);
+    free(sstvar->snomlt);
+    free(sstvar->eres);
+}
+ 
 #if SNOWM == 0 // NO SNOW CALCULATIONS
     void rainOrSnow_f0(const int ntimes, const double *precip, double *rainfall, double *snowfall){
         unsigned int i;
@@ -159,43 +195,7 @@
         }
     }
     
-    /*
-     * Allocate memory fo the snowstvar struct
-     */
-    int allocateMemoSnow(int size, snowstvar *sstvar){
-        sstvar->rainfall = (double *)malloc(size * sizeof(double));
-        sstvar->snowfall = (double *)malloc(size * sizeof(double));
-        sstvar->sno = (double *)malloc(size * sizeof(double));
-        sstvar->tsnow = (double *)malloc(size * sizeof(double));
-        sstvar->snomlt= (double *)malloc(size * sizeof(double));
-        sstvar->eres= (double *)malloc(size * sizeof(double));
-        // Check if malloc succeeded
-        if (!sstvar->rainfall || !sstvar->snowfall || !sstvar->sno || !sstvar->tsnow || !sstvar->snomlt || !sstvar->eres) {
-            perror("malloc failed");
-            free(sstvar->rainfall);
-            free(sstvar->snowfall);
-            free(sstvar->sno);
-            free(sstvar->tsnow);
-            free(sstvar->snomlt);
-            free(sstvar->eres);
-            return 1;
-        }
-    
-        return 0;
-    }
-    
-    /*
-     * Free memory fo the snowstvar struct
-     */
-    void freeMemoSnow(snowstvar *sstvar){
-        free(sstvar->rainfall);
-        free(sstvar->snowfall);
-        free(sstvar->sno);
-        free(sstvar->tsnow);
-        free(sstvar->snomlt);
-        free(sstvar->eres);
-    }
-               
+              
 #endif
              
 

@@ -116,14 +116,14 @@ int main(int argc, char **argv){
     /* int enddti = get_time_index(nlines, dts, ctrlb.enddt); */
     /* printf("simulation end datetime index:%d\n", enddti); */
 
-    printf("\n");
-	printf("******* RUNNING SNOW MODEL '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]);
-	printf("\n");
     snowstvar sstvar;
     allocateMemoSnow(metini.ntimes, &sstvar);
     #if SNOWM == 0 // 
         rainOrSnow_f0(metini.ntimes, metin.precip, sstvar.rainfall, sstvar.snowfall);
     #elif SNOWM == 1 //
+        printf("\n");
+	    printf("******* RUNNING SNOW MODEL '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]);
+	    printf("\n");
         rainOrSnow_f1(metini.ntimes, metin.precip, snowp.trs, metin.tave, sstvar.rainfall, sstvar.snowfall);
         snowModel(metini.ntimes, metin.timestamp, sstvar.snowfall, metin.tave, metin.tmax, evp.et, sstvar.tsnow, sstvar.sno, sstvar.snomlt, sstvar.eres, &snowp);
     #endif
