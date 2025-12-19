@@ -45,6 +45,7 @@
  * Function prototypes
  */
 // int ets(evapot *evp, meteoin *metin, float lat, int ntimes);
-int ets(char *etmethod, double *tave, struct tm *datestamp, double lat, int ntimes, double *et);
+// int ets(char *etmethod, double *tave, struct tm *datestamp, double lat, unsigned int ntimes, double *et);
+int ets(const char *etmethod, const double *tave, struct tm *timestamp, const double lat, const unsigned int ntimes, double *et);
 
 #endif // End of include guard

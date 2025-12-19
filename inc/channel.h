@@ -36,13 +36,18 @@
 /*
  * Function prototypes
  */
-int uh1_f(double x4, double **uh, int *uh_l);
-int uh2_f(double x4, double **uh, int *uh_l);
-void print_uh(const double *uh, const int uh_l);
+int uh1_f(double x4, double **uh, unsigned int *uh_l);
+int uh2_f(double x4, double **uh, unsigned int *uh_l);
+void print_uh(const double *uh, unsigned int uh_l);
 // double Q_f(double Pr, double *uh, int uh_l, float per);   
 
 #elif MODEL == 2 // HBV
-
+                 
+    /*
+     * Function prototypes
+    */
+    void routingModel(const double Qall, const unsigned int j, const int maxbas, double *qrou, double *qsim);
+    void backflowModel(const int maxbas, double *qrou);
 
 #elif MODEL == 3 // HYMOD
 

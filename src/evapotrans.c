@@ -42,6 +42,25 @@ double hamon_et(double Tave, double latr, int jday){
     return HAMON_C*N*Pt/12;
 }
 
+/*
+ * Hamon method to estimate potential evapotranspiration
+ */
+double hamon_hbv_et(const double Tave, const double lat, const int jday){
+
+    double P = asin(0.39795*cos(0.2163108 + 2.0 * atan(0.9671396*tan(0.00860*(double)(jday-186)))));
+
+    /* Daytime lenght */
+    double dayLength = 24.0 - (24.0/M_PI)*(acos((sin(0.8333*M_PI/180.0)+sin(lat*M_PI/180.0)*sin(P))/(cos(lat*M_PI/180.0)*cos(P))));
+
+    /* Saturation vapor pressure */
+    double eStar = 0.6108*exp((17.27*Tave)/(237.3+Tave));
+
+    /* Potential evapotranspiration */
+    return (715.5*dayLength*eStar/24.0)/(Tave + 273.2);
+}
+
+
+
 
 /*
  * Hargreaves method to estimate potential evapotranspiration
@@ -54,7 +73,7 @@ double hamon_et(double Tave, double latr, int jday){
  *  Potential evapotranspiration for multiple input data
  */
 /* int ets(evapot *evp, meteoin *metin, float lat, int ntimes){ */
-int ets(char *etmethod, double *tave, struct tm *timestamp, double lat, int ntimes, double *et){
+int ets(const char *etmethod, const double *tave, struct tm *timestamp, const double lat, const unsigned int ntimes, double *et){
 
     if (strcmp(etmethod, "hamon") == 0) {
         printf("ET computed using Hamon method\n");
@@ -72,6 +91,18 @@ int ets(char *etmethod, double *tave, struct tm *timestamp, double lat, int ntim
             yday = timestamp[i].tm_yday+1;// +1 because the counter of yday start at 0. */
             et[i]= hamon_et(tave[i], latr, yday); 
         }
+
+    } else if (strcmp(etmethod, "hamon_hbv") == 0) {
+        printf("ET computed using Hamon HBV method\n");
+
+        // Estimation of ET 
+        int yday;
+        unsigned int i;
+        for(i = 0; i<ntimes; i++){
+            yday = timestamp[i].tm_yday+1;// +1 because the counter of yday start at 0. */
+            et[i]= hamon_hbv_et(tave[i], lat, yday); 
+        }
+
 
 /*     } else if (strcmp(etmethod, "hargreaves") == 0) { */
         /* printf("ET computed using Hargreaves method\n"); */

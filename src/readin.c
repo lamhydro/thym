@@ -60,6 +60,7 @@ void freeininfo(ininfo *info){
     free(info->tcase);
     free(info->meteoinf);
     free(info->ctrlinf);
+    free(info->resultsoutf);
 }
 
 /*
@@ -209,24 +210,44 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
 		    sscanf(line, "%lf %lf %lf %lf", &modp->x1, &modp->x2, &modp->x3, &modp->x4);
             /* modp->x4 = floatToNextInt(dummy); // Transform a float to next smallest int */
             printf("x1 = %lf, x2 = %lf, x3 = %lf, x4 = %lf\n", modp->x1, modp->x2, modp->x3, modp->x4);
+            // Read snow model parameters
+            fgets(line, sizeof(line), file);
+            #if SNOWM == 0 // NO SNOW CALCULATIONS
+            #elif SNOWM == 1 // 
+    		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf", &snowp->trs, &snowp->tmlt, &snowp->sno50, &snowp->sno100, &snowp->ls, &snowp->bmlt6, &snowp->bmlt12);
+                printf("trs = %lf, tmlt = %lf, sno50 = %lf, sno100 = %lf, ls = %lf, bmlt6 = %lf, bmlt12 = %lf\n", snowp->trs, snowp->tmlt, snowp->sno50, snowp->sno100, snowp->ls, snowp->bmlt6, snowp->bmlt12);
+            #else // 
+            #endif
+
+
         #elif MODEL == 2 // HBV
-		    sscanf(line, "%lf %lf %lf %lf", &modp->w1, &modp->w2, &modp->w3, &modp->w4);
+                         
+		    sscanf(line, "%lf %lf %lf %d %lf %lf %lf %lf %lf %lf %lf %lf ", &modp->k2, &modp->k1, &modp->k0, &modp->maxbas, &modp->degd, &modp->degw, &modp->ttlim, &modp->perc, &modp->beta, &modp->lp, &modp->fcap, &modp->hl1);
+            modp->k2 = 1.0/modp->k2;
+            modp->k1 = 1.0/modp->k1;
+            modp->k0 = 1.0/modp->k0;
+            modp->maxbas = ROUNDINT(modp->maxbas / 24.); /* Transforming from hours to days */
+            printf("k2 = %lf, k1 = %lf, k0 = %lf, maxbas = %d, degd = %lf, degw = %lf, ttlim = %lf, perc = %lf, beta = %lf, lp = %lf, fcap = %lf, hl1 = %lf\n", modp->k2, modp->k1, modp->k0, modp->maxbas, modp->degd, modp->degw, modp->ttlim, modp->perc, modp->beta, modp->lp, modp->fcap, modp->hl1);
+
         #elif MODEL == 3 // HYMOD
-		    sscanf(line, "%lf %lf %lf %lf", &modp->y1, &modp->y2, &modp->y3, &modp->y4);
+                        
+		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf", &modp->ks, &modp->kq, &modp->ddf, &modp->tb, &modp->tth, &modp->alpha, &modp->b, &modp->huz);
+            modp->nq = 3; // number of quickflow reservoirs
+            modp->kv = 1.0; // vegetation parameter
+            modp->cpar = modp->huz / (1.0 + modp->b); // max capacity of soil moisture tank
+            printf("ks = %lf, kq = %lf, ddf = %lf, tb = %d, tth = %lf, alpha = %lf, b = %lf, huz = %lf, nq = %d, kv = %lf, cpar = %lf\n", modp->ks, modp->kq, modp->ddf, modp->tb, modp->tth, modp->alpha, modp->b, modp->huz, modp->nq, modp->kv, modp->cpar);
+
         #else // IAHCRES
 		    sscanf(line, "%lf %lf %lf %lf", &modp->z1, &modp->z2, &modp->z3, &modp->z4);
+            #if SNOWM == 0 // NO SNOW CALCULATIONS
+            #elif SNOWM == 1 // 
+            #else // 
+            #endif
+
+
         #endif
 
         fscanf(file,"\n");
-
-        // Read snow model parameters
-        fgets(line, sizeof(line), file);
-        #if SNOWM == 0 // NO SNOW CALCULATIONS
-        #elif SNOWM == 1 // 
-		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf", &snowp->trs, &snowp->tmlt, &snowp->sno50, &snowp->sno100, &snowp->ls, &snowp->bmlt6, &snowp->bmlt12);
-            printf("trs = %lf, tmlt = %lf, sno50 = %lf, sno100 = %lf, ls = %lf, bmlt6 = %lf, bmlt12 = %lf\n", snowp->trs, snowp->tmlt, snowp->sno50, snowp->sno100, snowp->ls, snowp->bmlt6, snowp->bmlt12);
-        #else // 
-        #endif
 
 		fclose(file);
 

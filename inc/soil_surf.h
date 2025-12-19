@@ -35,6 +35,7 @@ double percolation(double s, double x1);
 
 #elif MODEL == 2 // HBV
 
+    void soilModel(const double efprecip, const unsigned int i, const double fcap, const double lp, const double beta, const double et,  double *sowat, double *stw1, double *acet);
 
 #elif MODEL == 3 // HYMOD
 

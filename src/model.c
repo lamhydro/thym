@@ -22,7 +22,7 @@
 //int gr4j(float p, float e, float x1, float x2, float x3, int x4){
 /* int gr4j(meteoin *metin, evapot *evp, modparam modp, int ntimes){ */
 /* int gr4j(const double *precip, const double *et, const modparam *modp, const int ntimes, modstvar *mostv){ */
-int gr4j(const double *rainfall, const double *snomlt, const double *eres, const modparam *modp, const int ntimes, modstvar *mostv){
+int gr4j(const double *rainfall, const double *snomlt, const double *eres, const modparam *modp, const unsigned int ntimes, modstvar *mostv){
 
 /*         double pn; */
         /* double ps; */
@@ -84,13 +84,13 @@ int gr4j(const double *rainfall, const double *snomlt, const double *eres, const
 
     // Array of UH1 values
     double *uh1;
-    int uh1_l;
+    unsigned int uh1_l;
     uh1_f(modp->x4, &uh1, &uh1_l);
     /* print_uh(uh1, uh1_l); */
 
     // Array of UH2 values
     double *uh2;
-    int uh2_l;
+    unsigned int uh2_l;
     uh2_f(modp->x4, &uh2, &uh2_l);
     /* print_uh(uh2, uh2_l); */
 
@@ -162,10 +162,48 @@ int gr4j(const double *rainfall, const double *snomlt, const double *eres, const
 
         r0 = mostv[i].r; // Updating the past routing store level
     }
+    free(uh1);
+    free(uh2);
     return 0;
 }
 
 #elif MODEL == 2 // HBV
+
+    /* void hbv(const modparam *modp, const unsigned int ntimes, modstvar *mostv){ */
+    void hbv(const unsigned int ntimes, const double *tav, const double *precip,  const double *et, const modparam *modp, modstatev *mstv, modfluxv *mfxv){
+
+        unsigned int i;
+
+        /* Main computation */
+        double efprecip = 0.0;
+        double Qall = 0.0;
+       for(i = 1; i < ntimes; i++){ // Temporal loop
+
+            /* Computation of effective precipitation (snow model) */
+            efprecip = snowModel(i, tav[i], precip[i], mstv->sdep, modp->ttlim, modp->degw, modp->degd);
+            /* printf("Effective precipitation =  %lf, sdep = %lf\n", efprecip, mstv->sdep[i]); */
+
+            /* Computation of the shallow soil storage (soil model) */
+            soilModel(efprecip, i, modp->fcap,  modp->lp,  modp->beta, et[i], mstv->sowat, mstv->stw1, mfxv->acet);
+            /* printf("fcap = %lf, lp = %lf, beta = %lf, tave = %lf, et = %lf, sowat =  %lf, stw1 = %.10e, acet = %lf\n",modp->fcap, modp->lp, modp->beta, tav[i], et[i], mstv->sowat[i], mstv->stw1[i], mfxv->acet[i]); */
+
+            /* Computation of discharge (discharge model) */
+            Qall = dischargeModel(i, mstv->stw1, mstv->stw2, modp->hl1, modp->k0, modp->k1, modp->k2, modp->perc);
+            /* printf("Qall = %.8e\n",Qall); */
+            /* printf("hl1 =  %lf, k0 = %lf, k1 = %lf, k2 = %lf, perc = %lf\n", modp->hl1, modp->k0, modp->k1, modp->k2, modp->perc); */
+
+            /* Computation of runoff routing (routing model) */
+            routingModel(Qall, i, modp->maxbas, mfxv->qrou, mfxv->qsim);
+            /* printf("maxbas = %d, qsim = %.8e\n", modp->maxbas,  mfxv->qsim[i]); */
+
+            /* Reinitilize to zero routing arrays based on maxbas */
+            backflowModel(modp->maxbas, mfxv->qrou);
+            /* printf("qrou =  %lf\n", mfxv->qrou[i]); */
+
+        }
+
+       
+    }
 
 
 #elif MODEL == 3 // HYMOD

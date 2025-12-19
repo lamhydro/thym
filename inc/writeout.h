@@ -29,6 +29,8 @@
 /*
  * Defining object types
  */
+
+/* Model state variables */
 typedef struct {
 
     #if MODEL == 1 // GR4J
@@ -49,10 +51,8 @@ typedef struct {
         double q;
    
     #elif MODEL == 2 // HBV
-    
-    
+        
     #elif MODEL == 3 // HYMOD
-    
     
     #else // IAHCRES
     
@@ -61,12 +61,75 @@ typedef struct {
 } modstvar;
 
 
+/* Model state variables (other format) */
+typedef struct {
+
+    #if MODEL == 1 // GR4J
+    
+  
+    #elif MODEL == 2 // HBV
+        
+        double *sowat;
+        double *sdep;
+        double *ldep;
+        double *stw1;
+        double *stw2;
+
+    #elif MODEL == 3 // HYMOD
+
+        double *xhuz;        //Model computed upper zone soil moisture tank state height
+        double *xcuz;        //Model computed upper zone soil moisture tank state contents
+        double **xq;         //Model computed quickflow tank states contents
+        double *xs;          //Model computed slowflow tank state contents
+        double *snow_store;      //State of snow reservoir   
+    
+    #else // IAHCRES
+    
+    
+    #endif
+
+} modstatev;
+
+/* Model fluxes variables */
+typedef struct {
+
+    #if MODEL == 1 // GR4J
+         
+    #elif MODEL == 2 // HBV
+        
+       double *qrou; // Maxbas - routing Q's 
+       double *qsim; // array of outflow Q's for simulation
+       double *acet; // Actual evapotranspiration
+
+    #elif MODEL == 3 // HYMOD
+    
+       double *effprecip;   //Effective rain entering the SMA model (melt+precip if using snow model)
+       double *ae;          //Model computed actual evapotranspiration flux
+       double *ov;          //Model computed precipitation excess flux
+       double *qq;          //Model computed quickflow flux
+       double *qs;          //Model computed slowflow flux
+       double *q;           //Model computed total streamflow flux
+       double *snow;        //Daily snow
+       double *melt;        //Snow melt
+       double *pe;          // Potential ET (Hamon)
+
+    #else // IAHCRES
+    
+    #endif
+} modfluxv;
+
 
 /*
  * Function prototypes
  */
 // void save_model_results(char *filename, int n, struct tm *timestamp, double *et, double *runoff);
-void save_model_results(char *filename, const int n, struct tm *timestamp, const double *et, const modstvar *mostv, const snowstvar *sstvar);
+void save_model_results(char *filename, const unsigned int n, struct tm *timestamp, const double *et, const modstvar *mostv, const snowstvar *sstvar);
+void save_model_results2(char *filename, const unsigned int n, struct tm *timestamp, const modstatev *mstv, const modfluxv *mfxv);
 // void save_model_results(char *filename, const int n, struct tm *timestamp, const double *et, const modstvar *mostv);
+
+int allocateMemo_modstatev(const unsigned int size, modstatev *mstv);
+void freeMemo_modstatev(modstatev *mstv);
+int allocateMemo_modfluxv(const unsigned int size, modfluxv *mfxv);
+void freeMemo_modfluxv(modfluxv *mfxv);
 
 #endif // End of include guard

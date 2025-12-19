@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 #include "utils.h"
 // #include "snow.h"
@@ -51,7 +52,7 @@ typedef struct {
 } meteoin;
 
 typedef struct {
-    int ntimes, sdt, edt;
+    unsigned int ntimes, sdt, edt;
 } meteoini;
 
 typedef struct {
@@ -74,16 +75,28 @@ typedef struct{
 } evapot;
 
 typedef struct{
-    #if SNOWM == 0 // 
-    #elif SNOWM == 1 // 
-        double trs;
-        double tmlt;
-        double sno50;
-        double sno100;
-        double ls;
-        double bmlt6;
-        double bmlt12;
+    #if MODEL == 1 // GR4J
+        #if SNOWM == 0 // 
+        #elif SNOWM == 1 // 
+            double trs;
+            double tmlt;
+            double sno50;
+            double sno100;
+            double ls;
+            double bmlt6;
+            double bmlt12;
+        #endif
+    #elif MODEL == 2 // HBV
+    
+    
+    #elif MODEL == 3 // HYMOD
+    
+    
+    #else // IAHCRES
+    
+    
     #endif
+
 } snowparam;
 
 
@@ -93,15 +106,44 @@ typedef struct {
 
     #if MODEL == 1 // GR4J
     
-        double x1, x2, x3, x4;
+        double x1;
+        double x2;
+        double x3;
+        double x4;
     
     #elif MODEL == 2 // HBV
     
-        double w1, w2, w3, w4;
+        double k2; 
+        double k1; 
+        double k0; 
+        double degd;
+        double degw; 
+        double ttlim; 
+        double perc; 
+        double beta; 
+        double lp; 
+        double fcap;
+        double hl1;
+        int maxbas;
     
     #elif MODEL == 3 // HYMOD
-    
-        double y1, y2, y3, y4;
+
+        //User specified parameters
+        double huz;      //Maximum height of soil moisture accounting tank - Range [0, Inf]
+        double b;        //Scaled distribution function shape parameter    - Range [0, 2]
+        double alpha;    //Quick/slow split parameter                      - Range [0, 1]
+        int    nq;       //Number of quickflow routing tanks               - Range [1, Inf] (typically set to <3)
+        double kq;       //Quickflow routing tanks' rate parameter         - Range [0, 1]
+        double ks;       //Slowflow routing tank's rate parameter          - Range [0, 1]
+
+        // Snow parameters (degree-day model)
+        double ddf;        //Degree day factor                        - Range [ 0, 2]
+        double tth;        //Temperature threshold                    - Range [-5, 5] 
+        double tb;         //Base temperature to calculate melt       - Range [-5, 5]
+
+        // Given/calculated parameters
+        double kv;       //Vegetation adjustment to PE                     - Range [0, 2]
+        double cpar;     //Maximum combined contents of all stores (calculated from Huz and b)
     
     #else // IAHCRES
     

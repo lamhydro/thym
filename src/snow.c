@@ -53,9 +53,9 @@ void freeMemoSnow(snowstvar *sstvar){
     free(sstvar->snomlt);
     free(sstvar->eres);
 }
- 
+#if MODEL == 1 // GR4J
 #if SNOWM == 0 // NO SNOW CALCULATIONS
-    void rainOrSnow_f0(const int ntimes, const double *precip, double *rainfall, double *snowfall){
+    void rainOrSnow_f0(const unsigned int ntimes, const double *precip, double *rainfall, double *snowfall){
         unsigned int i;
         for (i = 0; i < ntimes; i++)
             {
@@ -80,7 +80,7 @@ void freeMemoSnow(snowstvar *sstvar){
       # Tsnow_0     initial snow temperature
       # SNO_0       initial snow depth
      * **********/
-    void rainOrSnow_f1(const int ntimes, const double *precip, double trs, double *tav, double *rainfall, double *snowfall){
+    void rainOrSnow_f1(const unsigned int ntimes, const double *precip, double trs, double *tav, double *rainfall, double *snowfall){
 
         unsigned int i;
         for (i = 0; i < ntimes; i++){
@@ -129,7 +129,7 @@ void freeMemoSnow(snowstvar *sstvar){
             /* Para_snow.Bmlt12, */
             /* Para_snow.Tmlt);     */
 
-    void snowModel(const int ntimes, struct tm *timestamp, double *snowfall, double *tav, double *tmax, double *ep, double *tsnow, double *sno, double *snomlt, double *eres, snowparam *snowp){
+    void snowModel(const unsigned int ntimes, struct tm *timestamp, double *snowfall, double *tav, double *tmax, double *ep, double *tsnow, double *sno, double *snomlt, double *eres, snowparam *snowp){
     
         unsigned int i;
         double sno0 = 5;
@@ -198,4 +198,122 @@ void freeMemoSnow(snowstvar *sstvar){
               
 #endif
              
+#elif MODEL == 2 // HBV
+                 
+    /* Define weather precipitation is either snowfall or rainfall
+     * 
+    * tav: Average temperature [oC].
+    * ttlim: Temperature threshold below which freezing occurs [oC]
+    * precip: Precipitation in a day [mm]
+    * raifall: Liquid precipitation in a day [mm]
+    * snowfall: Snowfall in a day [mm]
+    */
+    /* void rainOrSnow_hbv(const double tav, const double ttlim, const double precip, double *rainfall, double *snowfall){ */
+        /* rainfall = precip; */
+        /* snowfall = 0.0; */
+        /* if (tav < ttlim){ */
+            /* rainfall = 0.0; */
+            /* snowfall = precip; */
+        /* } */
+    /* } */
+
+    /* Compute snowmelt
+     *
+    * tav: Average temperature [oC].
+    * degw: Base temperature above which melt occurs [oC].
+    * degd: Degree day factor (snowmelt rate) [mm/(day oC)]
+    */
+    /* double snowmelt(const double tav, const double degw, const double degd){ */
+        /* double smelt = 0.0; */
+        /* if (tav > degw){ */
+            /* smelt = (tav-degw)*degd; */
+        /* }  */
+        /* return smelt; */
+    /* } */
+
+    /* Define weather precipitation is either snowfall or rainfall and compute snowmelt
+     * 
+     * ntimes: Number of time steps
+     * tav: Average temperature [oC].
+     * ttlim: Temperature threshold below which freezing occurs [oC]
+     * precip: Precipitation in a day [mm]
+     * raifall: Liquid precipitation in a day [mm]
+     * snowfall: Snowfall in a day [mm]
+     * degw: Base temperature above which melt occurs [oC].
+     * degd: Degree day factor (snowmelt rate) [mm/(day oC)]
+     * snomlt: snowmelt rate [mm/day]
+    */
+/*     void snowModel(const unsigned int ntimes, const double *tav, const double degw, const double degd, const double ttlim, const double *precip, double *rainfall, double *snowfall, double *snomlt){ */
+
+        /* unsigned int i; */
+        /* for (i = 0; i < ntimes; i++){ */
+            
+            /* [> Definition whether precipitation is either snowfall or rainfall<] */
+            /* rainfall[i] = precip[i]; */
+            /* snowfall[i] = 0.0; */
+            /* if (tav[i] < ttlim){ */
+                /* rainfall[i] = 0.0; */
+                /* snowfall[i] = precip[i]; */
+            /* } */
+
+            /* [> Compute snowmelt <] */
+            /* snomlt[i] = 0.0; */
+            /* if (tav[i] > degw){ */
+                /* snomlt[i] = (tav[i]-degw)*degd; */
+            /* } */
+ 
+        /* } */
+    /* } */
+
+/* Estimate effective precipitation */
+double snowModel(const unsigned int i, const double tav, const double precip, double *sdep, const double ttlim, const double degw, const double degd)
+{
+    /* printf("i = %d, tav = %lf, precip = %lf, ttlim = %lf, degw = %lf, degd = %lf\n", i, tav, precip, ttlim, degw, degd); */
+
+    double snomlt = 0.0;
+    double efprecip = 0.0; //effective precip initialized to zero
+
+    // starting point: equal to yesterday
+    sdep[i] = sdep[i-1];
+
+    // Snow/Rain
+    if (tav < ttlim)
+        sdep[i] += precip;    // if temperature is lower than threshold (ttlim) --> precip is all snow
+	else 
+        efprecip += precip;               // otherwise --> add precip to effective precip
+
+    // Snow melt if temperature > threshold (degw)
+    if (tav > degw)
+    {
+        //If there is actually snow to melt in the snow store...
+        if (sdep[i] > 0.0)
+        {
+            //Calculate snow melt using degree-day factor (degd)
+            snomlt = (tav - degw)*degd;
+            //If snow melt that wants to occur is more than what is actually stored...
+            if (snomlt > sdep[i])
+            {
+                efprecip += sdep[i];    //add full snow depth to effective precip
+                sdep[i] = 0.0;            //All of the snow has melted
+            }
+            else //Otherwise, we melt a portion of the snow store
+            {
+                efprecip += snomlt;                //effective precip is precip together with what acutally melted
+                sdep[i] -= snomlt;     //Remove the amount that melted from the snow store
+            }
+        }
+    }
+
+    return efprecip;
+}
+
+#elif MODEL == 3 // HYMOD
+
+
+#else // IAHCRES
+
+
+#endif
+
+
 

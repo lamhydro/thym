@@ -38,6 +38,7 @@ double Qd_f(double Qb, double F);
 
 #elif MODEL == 2 // HBV
 
+    double dischargeModel(const unsigned int i, double *stw1, double *stw2, const double hl1, const double k0, const double k1, const double k2, const double perc);
 
 #elif MODEL == 3 // HYMOD
 

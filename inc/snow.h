@@ -39,18 +39,34 @@ typedef struct{
  
 int allocateMemoSnow(int size, snowstvar *sstvar);
 void freeMemoSnow(snowstvar *sstvar);
+#if MODEL == 1 // GR4J
+               
 #if SNOWM == 0 // NO SNOW CALCULATIONS
-    void rainOrSnow_f0(const int ntimes, const double *precip, double *rainfall, double *snowfall);
+    void rainOrSnow_f0(const unsigned int ntimes, const double *precip, double *rainfall, double *snowfall);
 #elif SNOWM == 1 // 
   
     /*
      * Function prototypes
      */
-    void rainOrSnow_f1(const int ntimes, const double *precip, double trs, double *tav, double *rainfall, double *snowfall);
-    void snowModel(const int ntimes, struct tm *timestamp, double *snowfall, double *tav, double *tmax, double *ep, double *tsnow, double *sno, double *snomlt, double *eres, snowparam *snowp);
+    void rainOrSnow_f1(const unsigned int ntimes, const double *precip, double trs, double *tav, double *rainfall, double *snowfall);
+    void snowModel(const unsigned int ntimes, struct tm *timestamp, double *snowfall, double *tav, double *tmax, double *ep, double *tsnow, double *sno, double *snomlt, double *eres, snowparam *snowp);
     // void snowModel(int dn, double snowfall, double tav, double tmax, double ep, double tsnow0, double sno0, double *tsnow, double *sno, double *snomlt, double *eres, double sno50, double sno100, double ls, double bmlt6, double bmlt12, double tmlt);
-                
 #endif
+
+#elif MODEL == 2 // HBV
+
+    // void snowModel(const unsigned int ntimes, const double *tav, const double degw, const double degd, const double ttlim, const double *precip, double *rainfall, double *snowfall, double *snomlt);
+
+double snowModel(const unsigned int i, const double tav, const double precip, double *sdep, const double ttlim, const double degw, const double degd);
+
+#elif MODEL == 3 // HYMOD
+
+
+#else // IAHCRES
+
+
+#endif
+
 
 
 #endif // End of include guard

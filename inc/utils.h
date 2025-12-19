@@ -23,12 +23,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <math.h>
 
 /*
  * Defining constants
  */
 #define BUFFER_LENGTH 1024
+
+#define ROUNDINT(x) ((int)((x) + ((x) >= 0 ? 0.5 : -0.5)))
 
 /*
  * Function prototypes

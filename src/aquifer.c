@@ -65,7 +65,59 @@ double Qd_f(double Qb, double F){
 
 #elif MODEL == 2 // HBV
 
-
+    double dischargeModel(const unsigned int i, double *stw1, double *stw2, const double hl1, const double k0, const double k1, const double k2, const double perc)
+    {
+    
+        double Q0 = 0.0;
+        double Q1 = 0.0;
+        double Q2 = 0.0;
+        double Qall = 0.0;
+    
+        //If the upper reservoir water level is above the threshold for near surface flow
+        if (stw1[i] > hl1)
+        {
+            //Calculate it, and remove it from the reservoir
+            Q0 = (stw1[i] - hl1)*k0;
+            stw1[i] -= Q0;
+        }
+        else Q0 = 0.0;
+    
+        //If there is still water left in the upper reservoir
+        if (stw1[i] > 0.0)
+        {
+            //Calculate what now goes into interflow, and remove it
+            Q1 = stw1[i] * k1;
+            stw1[i] -= Q1;
+        }
+        else Q1 = 0.0;
+    
+        //If there is still anough water in the upper reservois to completely supply percolation...
+        if (stw1[i] > perc)
+        {
+            // Move the amount from the upper to the lower reservoir
+            stw1[i] -= perc;
+            stw2[i] += perc;
+        }
+        else
+        {
+            //We just put what we can from the upper into the lower
+            stw2[i] += stw1[i];
+            stw1[i] = 0.0;
+        }
+    
+        //If there is water in the lower reservoir...
+        if (stw2[i] > 0.0)
+        {
+            //Calculate base flow, and remove it
+            Q2 = stw2[i] * k2;
+            stw2[i] -= Q2;
+        }
+        else Q2 = 0.0;
+    
+        Qall = Q0 + Q1 + Q2; // total dischargearge - mm per timestep
+        return Qall;
+    }
+    
 #elif MODEL == 3 // HYMOD
 
 

@@ -32,7 +32,13 @@ int main(int argc, char **argv){
     ctrlout ctrlo;
     modparam modp;
     evapot evp;
+
     snowparam snowp;
+    #if MODEL == 1 // GR4J
+    #elif MODEL == 2 // HBV
+    #elif MODEL == 3 // HYMOD
+    #endif
+
     read_ctrl(ininf.ctrlinf, &ctrlb, &ctrlo, &modp, evp.etmethod, &snowp);
     //read_ctrl(ininf.ctrlinf);
 
@@ -116,18 +122,6 @@ int main(int argc, char **argv){
     /* int enddti = get_time_index(nlines, dts, ctrlb.enddt); */
     /* printf("simulation end datetime index:%d\n", enddti); */
 
-    snowstvar sstvar;
-    allocateMemoSnow(metini.ntimes, &sstvar);
-    #if SNOWM == 0 // 
-        rainOrSnow_f0(metini.ntimes, metin.precip, sstvar.rainfall, sstvar.snowfall);
-    #elif SNOWM == 1 //
-        printf("\n");
-	    printf("******* RUNNING SNOW MODEL '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]);
-	    printf("\n");
-        rainOrSnow_f1(metini.ntimes, metin.precip, snowp.trs, metin.tave, sstvar.rainfall, sstvar.snowfall);
-        snowModel(metini.ntimes, metin.timestamp, sstvar.snowfall, metin.tave, metin.tmax, evp.et, sstvar.tsnow, sstvar.sno, sstvar.snomlt, sstvar.eres, &snowp);
-    #endif
-
 	printf("\n");
 	printf("******* RUNNING '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]);
 	printf("\n");
@@ -141,16 +135,57 @@ int main(int argc, char **argv){
 
     // Model implementation
     modstvar *mostv = (modstvar *)malloc(metini.ntimes * sizeof(modstvar));
+    snowstvar sstvar;
+    allocateMemoSnow(metini.ntimes, &sstvar);
+    modstatev mstv;
+    allocateMemo_modstatev(metini.ntimes, &mstv);
+    modfluxv mfxv;
+    allocateMemo_modfluxv(metini.ntimes, &mfxv);
     #if MODEL == 1 // GR4J
+                   
+        //--------- Computation for snow processes 
+        #if SNOWM == 0 // 
+            rainOrSnow_f0(metini.ntimes, metin.precip, sstvar.rainfall, sstvar.snowfall);
+        #elif SNOWM == 1 //
+            printf("\n");
+	        printf("******* RUNNING SNOW MODEL '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]);
+	        printf("\n");
+            rainOrSnow_f1(metini.ntimes, metin.precip, snowp.trs, metin.tave, sstvar.rainfall, sstvar.snowfall);
+            snowModel(metini.ntimes, metin.timestamp, sstvar.snowfall, metin.tave, metin.tmax, evp.et, sstvar.tsnow, sstvar.sno, sstvar.snomlt, sstvar.eres, &snowp);
+        #endif
+
+
          //gr4j(metin, modp);
         /* gr4j(metin.precip, evp.et, &modp, metini.ntimes, mostv); */
+        //--------- Rainfall-runoff modelling
         gr4j(sstvar.rainfall, sstvar.snomlt, sstvar.eres, &modp, metini.ntimes, mostv);
     
     #elif MODEL == 2 // HBV
+/*         //--------- Computation for snow processes  */
+        /* #if SNOWM == 0 //  */
+        /* #elif SNOWM == 1 // */
+            /* printf("\n"); */
+			/* printf("******* RUNNING SNOW MODEL '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]); */
+			/* printf("\n"); */
+            /* snowModel(metini.ntimes, metin.tave, modp.degw, modp.degd, modp.ttlim, metin.precip, sstvar.rainfall, sstvar.snowfall, sstvar.snomlt); */
+        /* #endif */
+ 
+        //--------- Rainfall-runoff modelling
+        hbv(metini.ntimes, metin.tave, metin.precip, evp.et, &modp, &mstv, &mfxv);
     
     
     #elif MODEL == 3 // HYMOD
+        //--------- Computation for snow processes 
+        #if SNOWM == 0 // 
+        #elif SNOWM == 1 //
+            printf("\n");
+	        printf("******* RUNNING SNOW MODEL '%s' FOR TESTCASE '%s' *******\n",modp.model, argv[1]);
+	        printf("\n");
+        #endif
+ 
+        //--------- Rainfall-runoff modelling
     
+
     
     #else // IAHCRES
     
@@ -158,7 +193,12 @@ int main(int argc, char **argv){
     #endif
    
     // Print model output
-    save_model_results(ininf.resultsoutf, metini.ntimes, metin.timestamp, evp.et, mostv, &sstvar);
+    #if MODEL == 1 // GR4J
+        save_model_results(ininf.resultsoutf, metini.ntimes, metin.timestamp, evp.et, mostv, &sstvar);
+    #else
+        save_model_results2(ininf.resultsoutf, metini.ntimes, metin.timestamp, &mstv, &mfxv);
+    #endif
+
 
     // Free memory 
     freeininfo(&ininf);  // from ininf
@@ -181,7 +221,19 @@ int main(int argc, char **argv){
     /* freememo(struct tm v1, float *v2, float *v3, float *v4, float *v5, float *v6); */
     freememo(metin.timestamp, metin.tave, metin.tmin, metin.tmax, metin.precip, metin.runoff);
     freeMemoSnow(&sstvar);
-
+    freeMemo_modstatev(&mstv);
+    freeMemo_modfluxv(&mfxv);
+    #if MODEL == 1 // GR4J
+    #elif MODEL == 2 // HBV
+    
+    
+    #elif MODEL == 3 // HYMOD
+    
+    
+    #else // IAHCRES
+    
+    
+    #endif
 
     return 0;
 }
