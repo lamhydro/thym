@@ -22,7 +22,7 @@
 /*
  * Hamon method to estimate potential evapotranspiration
  */
-double hamon_et(double Tave, double latr, int jday){
+double hamon_et0(double Tave, double latr, int jday){
 
     // Solar declination angle (radians)
     double d = 1 + 0.033*cos(2*M_PI*jday/365);
@@ -45,7 +45,8 @@ double hamon_et(double Tave, double latr, int jday){
 /*
  * Hamon method to estimate potential evapotranspiration
  */
-double hamon_hbv_et(const double Tave, const double lat, const int jday){
+double hamon_et1(const double Tave, const double lat, const int jday){
+
 
     double P = asin(0.39795*cos(0.2163108 + 2.0 * atan(0.9671396*tan(0.00860*(double)(jday-186)))));
 
@@ -75,8 +76,8 @@ double hamon_hbv_et(const double Tave, const double lat, const int jday){
 /* int ets(evapot *evp, meteoin *metin, float lat, int ntimes){ */
 int ets(const char *etmethod, const double *tave, struct tm *timestamp, const double lat, const unsigned int ntimes, double *et){
 
-    if (strcmp(etmethod, "hamon") == 0) {
-        printf("ET computed using Hamon method\n");
+    if (strcmp(etmethod, "hamon0") == 0) {
+        printf("ET computed using Hamon 0 method\n");
         
         // Latitude to radians
         double latr = lat * M_PI / 180.0;
@@ -89,18 +90,19 @@ int ets(const char *etmethod, const double *tave, struct tm *timestamp, const do
             /* Tave = metin[i].tave; */
             /* jday = metin[i].timestamp.tm_yday+1;  */
             yday = timestamp[i].tm_yday+1;// +1 because the counter of yday start at 0. */
-            et[i]= hamon_et(tave[i], latr, yday); 
+            et[i]= hamon_et0(tave[i], latr, yday); 
         }
 
-    } else if (strcmp(etmethod, "hamon_hbv") == 0) {
-        printf("ET computed using Hamon HBV method\n");
+    } else if (strcmp(etmethod, "hamon1") == 0) {
+        printf("ET computed using Hamon 1 method\n");
 
         // Estimation of ET 
         int yday;
         unsigned int i;
         for(i = 0; i<ntimes; i++){
             yday = timestamp[i].tm_yday+1;// +1 because the counter of yday start at 0. */
-            et[i]= hamon_hbv_et(tave[i], lat, yday); 
+            et[i]= hamon_et1(tave[i], lat, yday); 
+            /* printf("ET = %lf, Tave = %lf, yday = %d, lat = %lf\n", et[i], tave[i], yday, lat); */
         }
 
 

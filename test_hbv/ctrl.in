@@ -10,7 +10,7 @@ GUADALUPE RIVER NR SPRING BRANCH, TX    ! Watershed name and hydrometric station
 runoff disch infil evapot       ! Variables to write out
 3600.			                ! Interval for writing output (s)
 
-hamon_hbv                       ! PET method ['obs', 'hamon', 'hamon_hbv', 'priestley']
+hamon1                          ! PET method ['obs', 'hamon0', 'hamon1', 'priestley']
 
 hbv                           ! Model's name 
 500 50 10 60 10	0 -1 50 3 0.5  500 50          ! Model parameters: k2  k1  k0  maxbas  degd  degw  ttlim  perc  beta  lp  fcap  hl1  

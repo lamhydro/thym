@@ -74,31 +74,30 @@ typedef struct{
     double *et;
 } evapot;
 
-typedef struct{
-    #if MODEL == 1 // GR4J
-        #if SNOWM == 0 // 
-        #elif SNOWM == 1 // 
-            double trs;
-            double tmlt;
-            double sno50;
-            double sno100;
-            double ls;
-            double bmlt6;
-            double bmlt12;
-        #endif
-    #elif MODEL == 2 // HBV
+/* typedef struct{ */
+    /* #if MODEL == 1 // GR4J */
+        /* #if SNOWM == 0 //  */
+        /* #elif SNOWM == 1 //  */
+            /* double trs; */
+            /* double tmlt; */
+            /* double sno50; */
+            /* double sno100; */
+            /* double ls; */
+            /* double bmlt6; */
+            /* double bmlt12; */
+        /* #endif */
+    /* #elif MODEL == 2 // HBV */
     
     
-    #elif MODEL == 3 // HYMOD
+    /* #elif MODEL == 3 // HYMOD */
     
     
-    #else // IAHCRES
+    /* #else // IAHCRES */
     
     
-    #endif
+    /* #endif */
 
-} snowparam;
-
+/* } snowparam; */
 
 
 typedef struct {
@@ -106,10 +105,19 @@ typedef struct {
 
     #if MODEL == 1 // GR4J
     
-        double x1;
-        double x2;
-        double x3;
-        double x4;
+        double x1;          /* Maximum capacity of the production store [mm] */
+        double x2;          /* Groundwater recharge coefficient */
+        double x3;          /* One-day ahead maximun capacity of the routing store [mm] */
+        double x4;          /* Time base of unit hydrograph UH1 */
+        double trs;         /* Air temperature above which the precipitation is all rainfall [oC] */
+        double tmlt;        /* The base temperature above which snow melt is allowed [oC] */
+        double sno50;       /* The depth of snow when the basin is 50% covered by snow [mm] */
+        double sno100;      /* The shreshold depth of snow, above which there is 100% cover [mm] */
+        double ls;          /* Snow temperature lag factor */
+        double bmlt6;       /* Melt factor on June 21 [mm H2O/day-oC] */
+        double bmlt12;      /* Melt factor on December 21 [mm H2O/day-oC] */
+        unsigned int nq;    /* Not used in GR4J */
+ 
     
     #elif MODEL == 2 // HBV
     
@@ -125,6 +133,7 @@ typedef struct {
         double fcap;
         double hl1;
         int maxbas;
+        unsigned int nq;         // Not used in HBV
     
     #elif MODEL == 3 // HYMOD
 
@@ -132,7 +141,7 @@ typedef struct {
         double huz;      //Maximum height of soil moisture accounting tank - Range [0, Inf]
         double b;        //Scaled distribution function shape parameter    - Range [0, 2]
         double alpha;    //Quick/slow split parameter                      - Range [0, 1]
-        int    nq;       //Number of quickflow routing tanks               - Range [1, Inf] (typically set to <3)
+        unsigned int    nq;       //Number of quickflow routing tanks               - Range [1, Inf] (typically set to <3)
         double kq;       //Quickflow routing tanks' rate parameter         - Range [0, 1]
         double ks;       //Slowflow routing tank's rate parameter          - Range [0, 1]
 
@@ -156,7 +165,8 @@ typedef struct {
 /*
  * Function prototypes
  */
-int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod, snowparam *snowp);
+// int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod, snowparam *snowp);
+int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod);
 //int read_ctrl(char *ctrlf);
 int get_time_interval_meteo_in(char *meteof, struct tm sdt, struct tm edt, meteoini *metinii);
 int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, double *et); 

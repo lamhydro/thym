@@ -78,7 +78,8 @@ void freectrlout(ctrlout *ctrlo){
  * Read ctrl.in file exept model name and parameters
  */
 //int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, ctrlparam *ctrlp){
-int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod, snowparam *snowp){
+/* int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod, snowparam *snowp){ */
+int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod){
 
     char line[MAX_LINE_LENGTH];
 
@@ -207,17 +208,19 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
         fgets(line, sizeof(line), file);
         #if MODEL == 1 // GR4J
             /* float dummy; */
-		    sscanf(line, "%lf %lf %lf %lf", &modp->x1, &modp->x2, &modp->x3, &modp->x4);
+		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &modp->x1, &modp->x2, &modp->x3, &modp->x4, &modp->trs, &modp->tmlt, &modp->sno50, &modp->sno100, &modp->ls, &modp->bmlt6, &modp->bmlt12);
             /* modp->x4 = floatToNextInt(dummy); // Transform a float to next smallest int */
-            printf("x1 = %lf, x2 = %lf, x3 = %lf, x4 = %lf\n", modp->x1, modp->x2, modp->x3, modp->x4);
-            // Read snow model parameters
-            fgets(line, sizeof(line), file);
-            #if SNOWM == 0 // NO SNOW CALCULATIONS
-            #elif SNOWM == 1 // 
-    		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf", &snowp->trs, &snowp->tmlt, &snowp->sno50, &snowp->sno100, &snowp->ls, &snowp->bmlt6, &snowp->bmlt12);
-                printf("trs = %lf, tmlt = %lf, sno50 = %lf, sno100 = %lf, ls = %lf, bmlt6 = %lf, bmlt12 = %lf\n", snowp->trs, snowp->tmlt, snowp->sno50, snowp->sno100, snowp->ls, snowp->bmlt6, snowp->bmlt12);
-            #else // 
-            #endif
+            modp->nq = 0.0;  // Not used in GR4J
+            printf("x1 = %lf, x2 = %lf, x3 = %lf, x4 = %lf, trs = %lf, tmlt = %lf, sno50 = %lf, sno100 = %lf, ls = %lf, bmlt6 = %lf, bmlt12 = %lf\n", modp->x1, modp->x2, modp->x3, modp->x4, modp->trs, modp->tmlt, modp->sno50, modp->sno100, modp->ls, modp->bmlt6, modp->bmlt12);
+
+/*             // Read snow model parameters */
+            /* fgets(line, sizeof(line), file); */
+            /* #if SNOWM == 0 // NO SNOW CALCULATIONS */
+            /* #elif SNOWM == 1 //  */
+                /* sscanf(line, "%lf %lf %lf %lf %lf %lf %lf", &snowp->trs, &snowp->tmlt, &snowp->sno50, &snowp->sno100, &snowp->ls, &snowp->bmlt6, &snowp->bmlt12); */
+                /* printf("trs = %lf, tmlt = %lf, sno50 = %lf, sno100 = %lf, ls = %lf, bmlt6 = %lf, bmlt12 = %lf\n", snowp->trs, snowp->tmlt, snowp->sno50, snowp->sno100, snowp->ls, snowp->bmlt6, snowp->bmlt12); */
+            /* #else //  */
+            /* #endif */
 
 
         #elif MODEL == 2 // HBV
@@ -227,6 +230,7 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
             modp->k1 = 1.0/modp->k1;
             modp->k0 = 1.0/modp->k0;
             modp->maxbas = ROUNDINT(modp->maxbas / 24.); /* Transforming from hours to days */
+            modp->nq = 0.0;  // Not used in HBV
             printf("k2 = %lf, k1 = %lf, k0 = %lf, maxbas = %d, degd = %lf, degw = %lf, ttlim = %lf, perc = %lf, beta = %lf, lp = %lf, fcap = %lf, hl1 = %lf\n", modp->k2, modp->k1, modp->k0, modp->maxbas, modp->degd, modp->degw, modp->ttlim, modp->perc, modp->beta, modp->lp, modp->fcap, modp->hl1);
 
         #elif MODEL == 3 // HYMOD
@@ -235,15 +239,10 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
             modp->nq = 3; // number of quickflow reservoirs
             modp->kv = 1.0; // vegetation parameter
             modp->cpar = modp->huz / (1.0 + modp->b); // max capacity of soil moisture tank
-            printf("ks = %lf, kq = %lf, ddf = %lf, tb = %d, tth = %lf, alpha = %lf, b = %lf, huz = %lf, nq = %d, kv = %lf, cpar = %lf\n", modp->ks, modp->kq, modp->ddf, modp->tb, modp->tth, modp->alpha, modp->b, modp->huz, modp->nq, modp->kv, modp->cpar);
+            printf("ks = %lf, kq = %lf, ddf = %lf, tb = %lf, tth = %lf, alpha = %lf, b = %lf, huz = %lf, nq = %d, kv = %lf, cpar = %lf\n", modp->ks, modp->kq, modp->ddf, modp->tb, modp->tth, modp->alpha, modp->b, modp->huz, modp->nq, modp->kv, modp->cpar);
 
         #else // IAHCRES
 		    sscanf(line, "%lf %lf %lf %lf", &modp->z1, &modp->z2, &modp->z3, &modp->z4);
-            #if SNOWM == 0 // NO SNOW CALCULATIONS
-            #elif SNOWM == 1 // 
-            #else // 
-            #endif
-
 
         #endif
 

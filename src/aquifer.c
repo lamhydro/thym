@@ -19,6 +19,7 @@
 #include <math.h>
               
 #if MODEL == 1 // GR4J
+
 /*
  * Catchment water exchange
  */
@@ -120,6 +121,27 @@ double Qd_f(double Qb, double F){
     
 #elif MODEL == 3 // HYMOD
 
+    double Nash(const double K, const unsigned int N, double Qin, double *X){
+        //Initialization
+        double *OO = (double *)calloc(N,sizeof(double));
+        double Qout;                       //Flow out of series of reservoirs
+        
+        //Loop through reservoirs
+        unsigned int i;
+        for (i = 0; i < N; i++)
+        {
+            OO[i] = K*X[i];
+            X[i]  = X[i] - OO[i];
+    
+            if (i==0) X[i] = X[i] + Qin; 
+            else        X[i] = X[i] + OO[i-1];
+        }
+    
+        // The outflow from the cascade is the outflow from the last reservoir
+        Qout = OO[N-1];
+        free(OO);
+        return Qout;
+    }
 
 #else // IAHCRES
 

@@ -39,6 +39,7 @@ double percolation(double s, double x1);
 
 #elif MODEL == 3 // HYMOD
 
+    void soilModel(const double efprecip, const unsigned int i, const double cpar, const double huz, const double b, const double et, const double kv, double *xhuz, double *ov, double *ae, double *xcuz);
 
 #else // IAHCRES
 

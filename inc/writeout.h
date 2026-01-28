@@ -31,42 +31,46 @@
  */
 
 /* Model state variables */
-typedef struct {
+/* typedef struct { */
 
-    #if MODEL == 1 // GR4J
+    /* #if MODEL == 1 // GR4J */
     
-        double pn;
-        double ps;
-        double pr;
-        double en;
-        double es;
-        double s;
-        double r;
-        double perc;
-        double f;
-        double qa;
-        double qb;
-        double qr;
-        double qd;
-        double q;
+        /* double pn; */
+        /* double ps; */
+        /* double pr; */
+        /* double en; */
+        /* double es; */
+        /* double s; */
+        /* double r; */
+        /* double perc; */
+        /* double f; */
+        /* double qa; */
+        /* double qb; */
+        /* double qr; */
+        /* double qd; */
+        /* double q; */
    
-    #elif MODEL == 2 // HBV
+    /* #elif MODEL == 2 // HBV */
         
-    #elif MODEL == 3 // HYMOD
+    /* #elif MODEL == 3 // HYMOD */
     
-    #else // IAHCRES
+    /* #else // IAHCRES */
     
     
-    #endif
-} modstvar;
+    /* #endif */
+/* } modstvar; */
 
 
 /* Model state variables (other format) */
 typedef struct {
 
     #if MODEL == 1 // GR4J
-    
-  
+
+        double *s;
+        double *r;
+        /* Snow modeling state variables */
+        double *tsnow;
+
     #elif MODEL == 2 // HBV
         
         double *sowat;
@@ -94,7 +98,27 @@ typedef struct {
 typedef struct {
 
     #if MODEL == 1 // GR4J
-         
+
+        double *pn;
+        double *ps;
+        double *pr;
+        double *en;
+        double *es;
+        double *perc;
+        double *f;
+        double *qa;
+        double *qb;
+        double *qr;
+        double *qd;
+        double *q;
+    
+        /* Snow modeling state variables */
+        double *rainfall;
+        double *snowfall;
+        double *sno;
+        double *snomlt;
+        double *eres;
+
     #elif MODEL == 2 // HBV
         
        double *qrou; // Maxbas - routing Q's 
@@ -103,7 +127,7 @@ typedef struct {
 
     #elif MODEL == 3 // HYMOD
     
-       double *effprecip;   //Effective rain entering the SMA model (melt+precip if using snow model)
+       double *efprecip;   //Effective rain entering the SMA model (melt+precip if using snow model)
        double *ae;          //Model computed actual evapotranspiration flux
        double *ov;          //Model computed precipitation excess flux
        double *qq;          //Model computed quickflow flux
@@ -123,12 +147,14 @@ typedef struct {
  * Function prototypes
  */
 // void save_model_results(char *filename, int n, struct tm *timestamp, double *et, double *runoff);
-void save_model_results(char *filename, const unsigned int n, struct tm *timestamp, const double *et, const modstvar *mostv, const snowstvar *sstvar);
-void save_model_results2(char *filename, const unsigned int n, struct tm *timestamp, const modstatev *mstv, const modfluxv *mfxv);
+// void save_model_results(char *filename, const unsigned int n, struct tm *timestamp, const double *et, const modstvar *mostv, const snowstvar *sstvar);
+void save_model_results2(char *filename, const unsigned int n, struct tm *timestamp, const modstatev *mstv, const modfluxv *mfxv, const double *et);
 // void save_model_results(char *filename, const int n, struct tm *timestamp, const double *et, const modstvar *mostv);
 
-int allocateMemo_modstatev(const unsigned int size, modstatev *mstv);
-void freeMemo_modstatev(modstatev *mstv);
+// int allocateMemo_modstatev(const unsigned int size, modstatev *mstv);
+int allocateMemo_modstatev(const unsigned int size, modstatev *mstv, const unsigned int nq);
+// void freeMemo_modstatev(modstatev *mstv);
+void freeMemo_modstatev(const unsigned int size, modstatev *mstv);
 int allocateMemo_modfluxv(const unsigned int size, modfluxv *mfxv);
 void freeMemo_modfluxv(modfluxv *mfxv);
 

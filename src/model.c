@@ -22,7 +22,10 @@
 //int gr4j(float p, float e, float x1, float x2, float x3, int x4){
 /* int gr4j(meteoin *metin, evapot *evp, modparam modp, int ntimes){ */
 /* int gr4j(const double *precip, const double *et, const modparam *modp, const int ntimes, modstvar *mostv){ */
-int gr4j(const double *rainfall, const double *snomlt, const double *eres, const modparam *modp, const unsigned int ntimes, modstvar *mostv){
+
+/* int gr4j(const double *rainfall, const double *snomlt, const double *eres, const modparam *modp, const unsigned int ntimes, modstvar *mostv){ */
+
+    void gr4j(const unsigned int ntimes, const double *tav, const double *precip, const double *tmax, const double *et, const modparam *modp, modstatev *mstv, modfluxv *mfxv, struct tm *timestamp){
 
 /*         double pn; */
         /* double ps; */
@@ -45,41 +48,65 @@ int gr4j(const double *rainfall, const double *snomlt, const double *eres, const
     unsigned int i;
     double s0 = 0.2*modp->x1; // Initializing the production store level
     /* double dummy = 0.001*area/dt; */
+
+    /* Snow modelling variables */
+    double sno0 = 5;
+    double tsnow0 = -5;
+    /* double ratio; */
+    /* double cov1, cov2; */
+    double ratio = modp->sno50 / modp->sno100;
+    double cov2 = log(0.05 / ratio) / (ratio - 0.95);
+    double cov1 = log(0.05) + 0.95 * cov2;
     for(i = 0; i < ntimes; i++){ // Temporal loop
-        p = rainfall[i]+snomlt[i];
-        e = eres[i];
+
+        // SNOW MODELLING
+        if (tav[i] >= modp->trs){
+                /* No snow */
+                mfxv->rainfall[i] = precip[i];
+                mfxv->snowfall[i] = 0.0;
+            } else {
+                /* Snow */
+                mfxv->snowfall[i] = precip[i];
+                mfxv->rainfall[i] = 0.0;
+
+            /* efprecip = snowModel(i, tav[i], precip[i], mstv->sdep, modp->ttlim, modp->degw, modp->degd); */
+        }
+
+        snowModel(i, timestamp, mfxv->snowfall, tav, tmax, et, mstv->tsnow, mfxv->sno, mfxv->snomlt, mfxv->eres, modp, cov1, cov2, &sno0, &tsnow0);
 
         // INTERCEPTION
+        p = mfxv->rainfall[i] + mfxv->snomlt[i];
+        e = mfxv->eres[i];
         // Net precipitation and evapotranspiration 
-        pn_en(p, e, &mostv[i].pn, &mostv[i].en);
+        pn_en(p, e, &mfxv->pn[i], &mfxv->en[i]);
         if (p >= e){
             // Precipitation added to the production store
-            mostv[i].ps = ps_f(mostv[i].pn, modp->x1, s0);
-            mostv[i].es = 0.0;
+            mfxv->ps[i] = ps_f(mfxv->pn[i], modp->x1, s0);
+            mfxv->es[i] = 0.0;
         }else{
             // Evapotranspiration added to the production store
-            mostv[i].es = es_f(mostv[i].en, modp->x1, s0);
-            mostv[i].ps = 0.0;
+            mfxv->es[i] = es_f(mfxv->en[i], modp->x1, s0);
+            mfxv->ps[i] = 0.0;
         }
         
         // SOIL SURFACE
         // Update water level in the production store
-        mostv[i].s = s0 - mostv[i].es + mostv[i].ps;
+        mstv->s[i] = s0 - mfxv->es[i] + mfxv->ps[i];
         /* Note that s must be less or equal to modp->x1 */
-        if (mostv[i].s > modp->x1){ 
-            mostv[i].s = modp->x1;
+        if (mstv->s[i] > modp->x1){ 
+            mstv->s[i] = modp->x1;
         }
         // Estimate percolation from the production store
-        mostv[i].perc = percolation(mostv[i].s, modp->x1);
+        mfxv->perc[i] = percolation(mstv->s[i], modp->x1);
         // Final update of water level in the production store
-        mostv[i].s = mostv[i].s - mostv[i].perc;
+        mstv->s[i] = mstv->s[i] - mfxv->perc[i];
         /* Note that s must be less or equal to modp->x1 */
-        if (mostv[i].s > modp->x1){
-            mostv[i].s = modp->x1;
+        if (mstv->s[i] > modp->x1){
+            mstv->s[i] = modp->x1;
         }
         // Water height that reach the routing functions
-        mostv[i].pr = mostv[i].perc + mostv[i].pn - mostv[i].ps;
-        s0 = mostv[i].s;
+        mfxv->pr[i] = mfxv->perc[i] + mfxv->pn[i] - mfxv->ps[i];
+        s0 = mstv->s[i];
     }
 
     // Array of UH1 values
@@ -98,73 +125,73 @@ int gr4j(const double *rainfall, const double *snomlt, const double *eres, const
     double r0 = 0.1*modp->x3; // Initializing the routing store level
     unsigned int t;
     for(i = 0; i < ntimes; i++){ // Temporal loop
-        mostv[i].qb = 0.0;
-        mostv[i].qa = 0.0;
+        mfxv->qb[i] = 0.0;
+        mfxv->qa[i] = 0.0;
         if (i + 1 >= uh2_l)
         {
             for (t = 0; t < uh1_l; t++)
             {
-                mostv[i].qa += *(uh1 + t) * mostv[i-t].pr * PA; 
+                mfxv->qa[i] += *(uh1 + t) * mfxv->pr[i-t] * PA; 
             }
             for (t = 0; t < uh2_l; t++)
             {
-                mostv[i].qb += *(uh2 + t) * mostv[i-t].pr * PB;
+                mfxv->qb[i] += *(uh2 + t) * mfxv->pr[i-t] * PB;
             }
         } else if (i + 1 >= uh1_l && i + 1 < uh2_l)
         {
             for (t = 0; t < uh1_l; t++)
             {
-                mostv[i].qa += *(uh1 + t) * mostv[i-t].pr * PA; 
+                mfxv->qa[i] += *(uh1 + t) * mfxv->pr[i-t] * PA; 
             }
             for (t = 0; t < i + 1; t++)
             {
-                mostv[i].qb += *(uh2 + t) * mostv[i-t].pr * PB;
+                mfxv->qb[i] += *(uh2 + t) * mfxv->pr[i-t] * PB;
             }
         } else if (i + 1 < uh1_l)
         {
             for (t = 0; t < i + 1; t++)
             {
-                mostv[i].qa += *(uh1 + t) * mostv[i-t].pr * PA; 
+                mfxv->qa[i] += *(uh1 + t) * mfxv->pr[i-t] * PA; 
             }
             for (t = 0; t < i + 1; t++)
             {
-                mostv[i].qb += *(uh2 + t) * mostv[i-t].pr * PB;
+                mfxv->qb[i] += *(uh2 + t) * mfxv->pr[i-t] * PB;
             }
         }
        
         // Catchment water exchage
-        mostv[i].f = water_exch(modp->x2, modp->x3, r0);
+        mfxv->f[i] = water_exch(modp->x2, modp->x3, r0);
 
         // Inflow to the routing store
         /* qa = Q_f(pr, uh1, uh1_l, PA);    */
         
         // Update the routing store water level
-        mostv[i].r = R_f1(r0, mostv[i].qa, mostv[i].f);
+        mstv->r[i] = R_f1(r0, mfxv->qa[i], mfxv->f[i]);
         
         // Outflow from the routing store
-        mostv[i].qr = Qr_f(mostv[i].r, modp->x3);
+        mfxv->qr[i] = Qr_f(mstv->r[i], modp->x3);
         
         // Final update the routing store water level
-        mostv[i].r = mostv[i].r - mostv[i].qr;
+        mstv->r[i] = mstv->r[i] - mfxv->qr[i];
         /* Note that r must be less or equal to modp->x3 */
-        if (mostv[i].r > modp->x3){
-            mostv[i].r = modp->x3;
+        if (mstv->r[i] > modp->x3){
+            mstv->r[i] = modp->x3;
         }
        
         // Direct outflow
         /* qb = Q_f(pr, uh2, uh2_l, PB);    */
-        mostv[i].qd = Qd_f(mostv[i].qb, mostv[i].f);
+        mfxv->qd[i] = Qd_f(mfxv->qb[i], mfxv->f[i]);
         
         // Total streamflow
         /* runoff_s[i] = (qr + qd)*dummy; // Discharge in m^3/s */
-        mostv[i].q = (mostv[i].qr + mostv[i].qd); // Discharge in m^3/s
+        mfxv->q[i] = (mfxv->qr[i] + mfxv->qd[i]); // Discharge in m^3/s
         /* printf("The streamflow is:%f\n",runoff_s[i]); */
 
-        r0 = mostv[i].r; // Updating the past routing store level
+        r0 = mstv->r[i]; // Updating the past routing store level
     }
     free(uh1);
     free(uh2);
-    return 0;
+    /* return 0; */
 }
 
 #elif MODEL == 2 // HBV
@@ -172,11 +199,11 @@ int gr4j(const double *rainfall, const double *snomlt, const double *eres, const
     /* void hbv(const modparam *modp, const unsigned int ntimes, modstvar *mostv){ */
     void hbv(const unsigned int ntimes, const double *tav, const double *precip,  const double *et, const modparam *modp, modstatev *mstv, modfluxv *mfxv){
 
-        unsigned int i;
+       unsigned int i;
 
-        /* Main computation */
-        double efprecip = 0.0;
-        double Qall = 0.0;
+       /* Main computation */
+       double efprecip = 0.0;
+       double Qall = 0.0;
        for(i = 1; i < ntimes; i++){ // Temporal loop
 
             /* Computation of effective precipitation (snow model) */
@@ -207,6 +234,51 @@ int gr4j(const double *rainfall, const double *snomlt, const double *eres, const
 
 
 #elif MODEL == 3 // HYMOD
+
+    void hymod(const unsigned int ntimes, const double *tav, const double *precip,  const double *et, const modparam *modp, modstatev *mstv, modfluxv *mfxv){
+
+       unsigned int i, m;
+       /* k = 0; */
+       double new_quickflow, new_slowflow;
+       double totalFlow = 0;
+       for(i = 0; i < ntimes; i++){ // Temporal loop
+
+            /* Computation of effective precipitation (snow model) */
+            /* mfxv->efprecip[i] = snowDD(i, dataDay); */
+            /* efprecip = snowModel(i, tav[i], precip[i], mstv->sdep, modp->ttlim, modp->degw, modp->degd); */
+            mfxv->efprecip[i] = snowModel(i, tav[i],  precip[i], mfxv->snow, mstv->snow_store, mfxv->melt, modp->tth, modp->tb, modp->ddf);
+
+            /* Run Pdm soil moisture accounting  */
+            soilModel(mfxv->efprecip[i], i, modp->cpar, modp->huz, modp->b, et[i], modp->kv, mstv->xhuz, mfxv->ov, mfxv->ae, mstv->xcuz);
+            
+            // Run Nash Cascade routing of quickflow component
+            new_quickflow = modp->alpha * mfxv->ov[i];
+            mfxv->qq[i] = Nash(modp->kq, modp->nq, new_quickflow, mstv->xq[i]);
+
+            // Run Nash Cascade routing of slowflow component
+            new_slowflow = (1.0-modp->alpha) * mfxv->ov[i];
+            mfxv->qs[i] = Nash(modp->ks, 1, new_slowflow, &mstv->xs[i]);
+
+            // Set the intial states of the next time step to those of the current time step
+            if (i < ntimes-1){
+                mstv->xhuz[i+1] = mstv->xhuz[i];
+                mstv->xs[i+1]   = mstv->xs[i];
+                mstv->snow_store[i+1] = mstv->snow_store[i];
+
+                for(m = 0; m < modp->nq; m++){
+                    mstv->xq[i+1][m] = mstv->xq[i][m];
+                    /* mstv->xq[i+1+m+modp->nq] = mstv->xq[i+m]; */
+                    /* mstv->xq[k+modp->nq] = mstv->xq[k]; */
+                    /* k++; */
+                }
+            }
+
+            mfxv->q[i] = mfxv->qq[i] + mfxv->qs[i];
+            totalFlow += mfxv->q[i]; 
+        }
+       printf("Total flow = %lf mm \n", totalFlow);
+    }
+
 
 
 #else // IAHCRES

@@ -59,7 +59,7 @@ def read_between_labels_columns(filename, start_label, end_label, columns=None):
 
     return rows
 
-def write_to_file(output_file, data1, data2, header=None):
+def write_to_file(output_file, data1, header=None):
     """
     Write rows (list of lists) into output_file in datetime format: YYYY-MM-DD HH:MM:SS.
     Assumes rows contain at least [year, month, day] and optionally [hour, minute, second].
@@ -74,20 +74,21 @@ def write_to_file(output_file, data1, data2, header=None):
         writer = csv.writer(f)
         if header:
             writer.writerow(header)
-        for row1, row2 in zip(data1,data2):
+        #  for row1, row2 in zip(data1,data2):
+        for row1 in data1:
             # Pad with zeros and default missing time parts to 0
             year  = int(float(row1[0]))
             month = int(float(row1[1]))
             day   = int(float(row1[2]))
             #dt = datetime(year, month, day, hour, minute, second)
 
-            tave = float(row1[5])
-            tmin = float(row2[1])
-            tmax = float(row2[0])
+            tave = (float(row1[6]) + float(row1[7]))*0.5
+            tmin = float(row1[7])
+            tmax = float(row1[6])
             precip = float(row1[3])
-            evapt = 0.0 # This value can change if et is known. 
+            evapt = float(row1[4]) # This value can change if et is known. 
             #disch = float(row1[4])*basin_area*0.001/(24*60*60)
-            disch = float(row1[4])
+            disch = float(row1[5])
 
             values = [tave, tmin, tmax, precip, evapt, disch]
 
@@ -104,22 +105,22 @@ def main():
 
     # Read file1
     data1 = read_between_labels_columns(file1, start_label, end_label)
-    for row in data1:
-        print(row)
+    #  for row in data1:
+        #  print(row)
     
     # Read file2
-    data2 = read_between_labels_columns(file2, start_label, end_label, columns=cols2)
+    #  data2 = read_between_labels_columns(file2, start_label, end_label, columns=cols2)
     #  for row in data2:
     #      print(row)
     
     # Write into output file
-    write_to_file(output_file, data1,data2, header)
+    write_to_file(output_file, data1, header)
 
 if __name__ == "__main__":
 
     # Define input/output data
-    file1 = 'data_Tavg.txt'
-    file2 = 'data_Tminmax.txt'
+    file1 = 'GUA.in'
+    #file2 = 'data_Tminmax.txt'
     start_label = "<DATA_START>"
     end_label = "<DATA_END>"
     cols1 = None 
