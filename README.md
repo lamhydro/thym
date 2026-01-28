@@ -70,7 +70,6 @@ Note that the parameters *x1*, *x2*, *x3* and *x4* are often subjected to calibr
 
 #### HBV
 
-|        |        |
 |--------|--------|
 | col 1  | k2     |
 | col 2  | k1     |
