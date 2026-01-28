@@ -2,7 +2,6 @@
 ---
 
 ## Description
----
 
 **thym** is hydrological modelling platform  designed to analyse hydrological processes in tropical basins using *aggregate rainfall-runoff conceptual models*. So far, the platforms includes three different well known models:
 
@@ -15,7 +14,6 @@ These models run at *daily time steps* and are able to estimate daily runoff at 
 **thym** is programmed in `C` language, and the pre- and postprocessing of model information is performed in `python`.
 
 ## Code structure
----
 
 The main directory `/thym` is composed by the following directories and files:
 
@@ -72,6 +70,7 @@ Note that:
 Note that the parameters *x1*, *x2*, *x3* and *x4* are often subjected to calibration. The others parameters belong to the *snow model* and are not relevant in tropical basins modelling.
 
 #### HBV
+
 |COL|PARAMETER|MEANING|
 |--------|--------|-|
 | col 1  | k2     | |
@@ -101,7 +100,6 @@ Note that the parameters *x1*, *x2*, *x3* and *x4* are often subjected to calibr
 | col 7  | b     | Scaled distribution function shape parameter - Range [0, 2]        |
 | col 8  | huz   | Maximum height of soil moisture accounting tank - Range [0, Inf]   |
 
-
 ### `meteo.in` file 
 This file contains the *meterological data* recorded within the catchment. This file has the following columns:
 
@@ -122,12 +120,10 @@ where:
 
 and the output file:
 
-
 ### `results.out` file 
 This file is composed by columns that records the values of *state variables* and *flux variables* for each simulated day. The variables (columns) are different for each model. Note that the most relevant variable, the *total catchment runoff* is called *q_mm* for any model and is given in *mm*. 
 
 ## Compilation, execution and plotting
----
 
 ### Compilation
 
