@@ -53,6 +53,7 @@ Note that:
 - In *row 16*: This row contains the parameters corresponding to the model in *row 15*. According to the model, the parameters are as follow:
 
 #### GR4J
+
 | col 1  | x1     | Maximum capacity of the production store [mm]                      |
 | col 2  | x2     | Groundwater recharge coefficient                                   |
 | col 3  | x3     | One-day ahead maximun capacity of the routing store [mm]           |
@@ -68,6 +69,9 @@ Note that:
 Note that the parameters *x1*, *x2*, *x3* and *x4* are often subjected to calibration. The others parameters belong to the *snow model* and are not relevant in tropical basins modelling.
 
 #### HBV
+
+|        |        |
+|--------|--------|
 | col 1  | k2     |
 | col 2  | k1     |
 | col 3  | k0     |
