@@ -28,6 +28,7 @@ The main directory `/thym` is composed by the following directories and files:
 ### `ctrl.in` file
 This is the control or steering file for **thym**. This file has the following structure:
 
+|ROW|MEANING|
 |--------|---------------------------------------------------------|
 | row 1  | Watershed name and hydrometric station                  |
 | row 2  | Outlet latitude [dec]                                   |
