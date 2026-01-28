@@ -46,7 +46,7 @@ This is the control or steering file for **thym**. This file has the following s
 | row 14 |                                                         |
 | row 15 | Model's name ['gr4j' 'hbv' 'hymod']                     |
 | row 16 | Model's parameters                                      |
-|--------|---------------------------------------------------------|
+
 
 Note that:
 - In *row 13*: The user can chose the method to estimated the daily *potential evapotranspiration* among the following options: *obs* [observed precomputed values introduced through the `meteo.in` file], *hamon0* [Hamon method version 0], *hamon1* [Hamon method version 1 (more standard)] and *priestly* [Priestley method].  
@@ -55,6 +55,8 @@ Note that:
 
 #### GR4J
 
+|COL|PARAMETER|MEANING|
+|--------|--------|--------------------------------------------------------------------|
 | col 1  | x1     | Maximum capacity of the production store [mm]                      |
 | col 2  | x2     | Groundwater recharge coefficient                                   |
 | col 3  | x3     | One-day ahead maximun capacity of the routing store [mm]           |
@@ -70,32 +72,34 @@ Note that:
 Note that the parameters *x1*, *x2*, *x3* and *x4* are often subjected to calibration. The others parameters belong to the *snow model* and are not relevant in tropical basins modelling.
 
 #### HBV
-
-|--------|--------|
-| col 1  | k2     |
-| col 2  | k1     |
-| col 3  | k0     |
-| col 4  | degd   |
-| col 5  | degw   |
-| col 6  | ttlim  | 
-| col 7  | perc   | 
-| col 8  | beta   |
-| col 9  | lp     |
-| col 10 | fcap   |
-| col 11 | hl1    |
-| col 12 | maxbas |
+|COL|PARAMETER|MEANING|
+|--------|--------|-|
+| col 1  | k2     | |
+| col 2  | k1     | |
+| col 3  | k0     | |
+| col 4  | degd   | |
+| col 5  | degw   | |
+| col 6  | ttlim  | |
+| col 7  | perc   | | 
+| col 8  | beta   | |
+| col 9  | lp     | |
+| col 10 | fcap   | |
+| col 11 | hl1    | |
+| col 12 | maxbas | |
 
 
 #### HYMOD
 
-| col 1  | ks    | Slowflow routing tank's rate parameter - Range [0, 1]
-| col 2  | kq    | Quickflow routing tanks' rate parameter - Range [0, 1]
-| col 3  | ddf   | Degree day factor - Range [ 0, 2]
-| col 4  | tb    | Base temperature to calculate melt - Range [-5, 5]
-| col 5  | tth   | Temperature threshold - Range [-5, 5] 
-| col 6  | alpha | Quick/slow split parameter - Range [0, 1]
-| col 7  | b     | Scaled distribution function shape parameter - Range [0, 2]
-| col 8  | huz   | Maximum height of soil moisture accounting tank - Range [0, Inf]
+|COL|PARAMETER|MEANING|
+|--------|-------|--------------------------------------------------------------------|
+| col 1  | ks    | Slowflow routing tank's rate parameter - Range [0, 1]              |
+| col 2  | kq    | Quickflow routing tanks' rate parameter - Range [0, 1]             |
+| col 3  | ddf   | Degree day factor - Range [ 0, 2]                                  |
+| col 4  | tb    | Base temperature to calculate melt - Range [-5, 5]                 |
+| col 5  | tth   | Temperature threshold - Range [-5, 5]                              |
+| col 6  | alpha | Quick/slow split parameter - Range [0, 1]                          |
+| col 7  | b     | Scaled distribution function shape parameter - Range [0, 2]        |
+| col 8  | huz   | Maximum height of soil moisture accounting tank - Range [0, Inf]   |
 
 
 ### `meteo.in` file 
