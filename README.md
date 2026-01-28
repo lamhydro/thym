@@ -48,7 +48,7 @@ This is the control or steering file for **thym**. This file has the following s
 |--------|---------------------------------------------------------|
 
 Note that:
-- In *row 13*: The user can chose the method to estimated the daily *potential evapotranspiration* among the following options: *obs* [observed precomputed values introduced through the '`meteo.in` file], *hamon0* [Hamon method version 0], *hamon1* [Hamon method version 1 (more standard)] and *priestly* [Priestley method].  
+- In *row 13*: The user can chose the method to estimated the daily *potential evapotranspiration* among the following options: *obs* [observed precomputed values introduced through the `meteo.in` file], *hamon0* [Hamon method version 0], *hamon1* [Hamon method version 1 (more standard)] and *priestly* [Priestley method].  
 
 - In *row 16*: This row contains the parameters corresponding to the model in *row 15*. According to the model, the parameters are as follow:
 
