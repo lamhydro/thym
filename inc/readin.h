@@ -37,13 +37,14 @@
 #define METEOIN_FILE "meteo.in"
 #define CTRLIN_FILE "ctrl.in"
 #define RESULTSOUT_FILE "results.out"
+#define DIAGNOSTICOUT_FILE "diagnostic.out"
 #define NHEADER_LINES_METEOIN 1
 
 /*
  * Defining object types
  */
 typedef struct {
-    char *tcase, *ctrlinf, *meteoinf, *resultsoutf;
+    char *tcase, *ctrlinf, *meteoinf, *resultsoutf, *diagnosticoutf;
 } ininfo;
 
 typedef struct {

@@ -1,0 +1,58 @@
+ProgramType  	    DDS
+ObjectiveFunction   GCOP
+ModelExecutable     ./ost_thym_gr4j.sh
+PreserveBestModel   ./save_best.sh
+
+ModelSubdir processor_
+
+BeginExtraDirs
+model
+EndExtraDirs
+
+BeginFilePairs
+  ctrl.in.tpl;	ctrl.in
+EndFilePairs
+
+#Parameter/DV Specification
+BeginParams
+#parameter	   init.	 low		high	tx_in  tx_ost tx_out
+par_x1		random		100		1200	none   none 	none
+par_x2  	random	 	-5		3	none   none 	none
+par_x3  	random		20		300	none   none 	none
+par_x4  	random		1.1		2.9 	none   none	none
+EndParams
+
+BeginResponseVars
+  #name	  filename			        keyword		line	col	token
+  #NS      ./model/output/Irondequoit_Diagnostics.csv;	OST_NULL	1	4	','
+  NS      ./model/test_gr4j/diagnostic.out;	OST_NULL	1	2	','
+EndResponseVars
+
+BeginTiedRespVars
+  NegNS 1 NS wsum -1.00
+EndTiedRespVars
+
+BeginGCOP
+  CostFunction NegNS
+  PenaltyFunction APM
+EndGCOP
+
+BeginConstraints
+	# not needed when no constraints, but PenaltyFunction statement above is required
+	# name     type     penalty    lwr   upr   resp.var
+EndConstraints
+
+# Randomsed control added
+RandomSeed 123
+
+#Algorithm should be last in this file:
+
+BeginDDSAlg
+	PerturbationValue 0.20
+	MaxIterations 1000
+	UseRandomParamValues
+	# UseInitialParamValues
+	# Note: above intializes DDS to parameter values IN the initial
+	#       model input files IF 'extract' option used in BeginParams
+	#       block (column 'init')
+EndDDSAlg

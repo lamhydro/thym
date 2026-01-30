@@ -1,0 +1,17 @@
+NAME                            ! Watershed name and hydrometric station
+1.0                       ! Outlet latitude (dec)
+1.0                      ! Outlet longitude (dec)
+1.0                           ! Outlet altitude in (m.a.s.l)
+1.9                         ! Watershed area in km^2
+1981 01 01 00 00 00	            ! Starting time (yyyy mm dd hr[0 23] min[0 59] sec[0 59])
+1990 12 31 00 00 00	            ! End time (yyyy mm dd hr[0 23] min[0 59] sec[0 59])
+86400   			            ! Time step (s)
+
+runoff disch infil evapot       ! Variables to write out
+3600.			                ! Interval for writing output (s)
+
+obs                           ! PET method ['obs', 'hamon0', 'hamon1', 'priestley']
+
+gr4j                            ! Model's name 
+650.923868816329 -3.91936142662807 68.3037161810372 1.15750566325813 -2.83991936040818 -1.18136487423606 0.999985545799455 404.525758356482 0.999995301979873 0.772937105715276 0.905249612044592                    ! Models parameters: param1 param2 param3 param4 [Snow model parameters]
+

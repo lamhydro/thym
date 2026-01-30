@@ -25,6 +25,7 @@
 #include <time.h>
 
 #include "snow.h"
+#include "diagnostic.h"
 
 /*
  * Defining object types
@@ -122,7 +123,7 @@ typedef struct {
     #elif MODEL == 2 // HBV
         
        double *qrou; // Maxbas - routing Q's 
-       double *qsim; // array of outflow Q's for simulation
+       double *q; // array of outflow Q's for simulation
        double *acet; // Actual evapotranspiration
 
     #elif MODEL == 3 // HYMOD
@@ -148,8 +149,9 @@ typedef struct {
  */
 // void save_model_results(char *filename, int n, struct tm *timestamp, double *et, double *runoff);
 // void save_model_results(char *filename, const unsigned int n, struct tm *timestamp, const double *et, const modstvar *mostv, const snowstvar *sstvar);
-void save_model_results2(char *filename, const unsigned int n, struct tm *timestamp, const modstatev *mstv, const modfluxv *mfxv, const double *et);
+void save_model_results(char *filename, const unsigned int n, struct tm *timestamp, const modstatev *mstv, const modfluxv *mfxv, const double *et);
 // void save_model_results(char *filename, const int n, struct tm *timestamp, const double *et, const modstvar *mostv);
+void save_model_diagnostic(char *filename, const unsigned int n, const double *obs, const double *sim);
 
 // int allocateMemo_modstatev(const unsigned int size, modstatev *mstv);
 int allocateMemo_modstatev(const unsigned int size, modstatev *mstv, const unsigned int nq);

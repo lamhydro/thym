@@ -140,13 +140,13 @@ int allocateMemo_modfluxv(const unsigned int size, modfluxv *mfxv){
     #elif MODEL == 2 // HBV
        
         mfxv->qrou = (double *)calloc(size, sizeof(double));
-        mfxv->qsim = (double *)calloc(size, sizeof(double));
+        mfxv->q = (double *)calloc(size, sizeof(double));
         mfxv->acet = (double *)calloc(size, sizeof(double));
         // Check if malloc succeeded
-        if (!mfxv->qrou || !mfxv->qsim || !mfxv->acet) {
+        if (!mfxv->qrou || !mfxv->q || !mfxv->acet) {
             perror("malloc failed");
             free(mfxv->qrou);
-            free(mfxv->qsim);
+            free(mfxv->q);
             free(mfxv->acet);
             return 1;
         }
@@ -250,7 +250,7 @@ void freeMemo_modfluxv(modfluxv *mfxv){
     #elif MODEL == 2 // HBV
  
         free(mfxv->qrou);
-        free(mfxv->qsim);
+        free(mfxv->q);
         free(mfxv->acet);
 
     #elif MODEL == 3 // HYMOD
@@ -363,9 +363,9 @@ void freeMemo_modfluxv(modfluxv *mfxv){
 
 
 /*
- * Print state and flux variables
+ * Write out state and flux variables in 'results.out' file.
  */
-void save_model_results2(char *filename, const unsigned int n, struct tm *timestamp, const modstatev *mstv, const modfluxv *mfxv, const double *et){
+void save_model_results(char *filename, const unsigned int n, struct tm *timestamp, const modstatev *mstv, const modfluxv *mfxv, const double *et){
 
     FILE *fp = fopen(filename, "w");
     if (fp == NULL) {
@@ -402,7 +402,7 @@ void save_model_results2(char *filename, const unsigned int n, struct tm *timest
 
         #elif MODEL == 2 // HBV
    
-            fprintf(fp,"%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8e,%.8lf\n",buffer, mstv->sowat[i], mstv->sdep[i], mstv->ldep[i], mstv->stw1[i], mstv->stw2[i], mfxv->qsim[i], mfxv->acet[i]);
+            fprintf(fp,"%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8e,%.8lf\n",buffer, mstv->sowat[i], mstv->sdep[i], mstv->ldep[i], mstv->stw1[i], mstv->stw2[i], mfxv->q[i], mfxv->acet[i]);
         
         #elif MODEL == 3 // HYMOD
         
@@ -420,3 +420,29 @@ void save_model_results2(char *filename, const unsigned int n, struct tm *timest
     /* printf("Time series written to %s\n", filename); */
 
 }
+
+/*
+ * Write out diagnostic metrics in 'diagnostic.out' file.
+ */
+void save_model_diagnostic(char *filename, const unsigned int n, const double *obs, const double *sim){
+
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL) {
+        perror("Error opening file");
+        return;
+    }
+
+    fprintf(fp,"NSE,%0.8lf\n", nash_sutcliffe(  n,   obs,   sim));
+    fprintf(fp,"LNSE,%0.8lf\n",  log_nash_sutcliffe( n,   obs,   sim));
+    fprintf(fp,"RMSE,%0.8lf\n",  root_mean_squared_error( n,   obs,   sim));
+    fprintf(fp,"PBIAS,%0.8lf\n",  perc_bias( n,   obs,   sim));
+    fprintf(fp,"ABSER,%0.8lf\n",  ave_abs_error( n,   obs,   sim));
+    fprintf(fp,"ABSMAXER,%0.8lf\n",  max_abs_error( n,   obs,   sim));
+    fprintf(fp,"PDIFF,%0.8lf\n",  peak_diff( n,   obs,   sim));
+    fprintf(fp,"ERCOR,%0.8lf\n",  corr_of_error( n,   obs,   sim));
+    fprintf(fp,"NSC,%d", numb_of_sign_ch( n,   obs,   sim));
+
+    fclose(fp);
+
+}
+

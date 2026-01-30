@@ -200,9 +200,12 @@ int main(int argc, char **argv){
     /* #if MODEL == 1 // GR4J */
         /* save_model_results(ininf.resultsoutf, metini.ntimes, metin.timestamp, evp.et, mostv, &sstvar); */
     /* #else */
-        save_model_results2(ininf.resultsoutf, metini.ntimes, metin.timestamp, &mstv, &mfxv, evp.et);
+    save_model_results(ininf.resultsoutf, metini.ntimes, metin.timestamp, &mstv, &mfxv, evp.et);
     /* #endif */
 
+    // Print model diagnostic metrics
+    save_model_diagnostic(ininf.diagnosticoutf, metini.ntimes, metin.runoff, mfxv.q);
+    
 
     // Free memory 
     freeininfo(&ininf);  // from ininf

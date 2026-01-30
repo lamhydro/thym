@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 /*
  * Defining constants
@@ -45,6 +46,8 @@ int get_time_index(int nts, struct tm *dts, struct tm dt);
 void print_box_banner(const char *title, const char *author, const char *organiz);
 void print_centered(const char *text, int width);
 void freememo(struct tm *v1, double *v2, double *v3, double *v4, double *v5, double *v6);
+double mean_double(const unsigned int n, const double *x);
+double stddev_double(const unsigned int n, const double *x);
 // int floatToNextInt(float x);
 
 

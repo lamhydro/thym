@@ -220,8 +220,8 @@
             /* printf("hl1 =  %lf, k0 = %lf, k1 = %lf, k2 = %lf, perc = %lf\n", modp->hl1, modp->k0, modp->k1, modp->k2, modp->perc); */
 
             /* Computation of runoff routing (routing model) */
-            routingModel(Qall, i, modp->maxbas, mfxv->qrou, mfxv->qsim);
-            /* printf("maxbas = %d, qsim = %.8e\n", modp->maxbas,  mfxv->qsim[i]); */
+            routingModel(Qall, i, modp->maxbas, mfxv->qrou, mfxv->q);
+            /* printf("maxbas = %d, q = %.8e\n", modp->maxbas,  mfxv->q[i]); */
 
             /* Reinitilize to zero routing arrays based on maxbas */
             backflowModel(modp->maxbas, mfxv->qrou);

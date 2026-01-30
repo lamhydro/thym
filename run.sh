@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# To run 'run.sh' you must execute './run.sh [mod_name]', where 'mod_name' can be: [gr4j hbv hymod]
+# To run 'run.sh' you must execute './run.sh [test_case]' (e.g './run.sh test_gr4j')
 
 echo ""
 echo "Excecuting $0 for $1"

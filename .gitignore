@@ -13,6 +13,15 @@ test_hymod/*
 !test_hymod/ctrl.in
 !test_hymod/meteo.in
 
+test_gr4j_ostr/*
+!test_gr4j_ostr/ostIn_Unix.txt
+!test_gr4j_ostr/ostIn.txt
+!test_gr4j_ostr/ctrl.in.tlp
+!test_gr4j_ostr/ctrl.in
+!test_gr4j_ostr/ost_thym_gr4j.sh
+!test_gr4j_ostr/run_ost.sh
+!test_gr4j_ostr/save_best.sh
+
 bin/*
 !bin/makefile
 

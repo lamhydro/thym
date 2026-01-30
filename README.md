@@ -140,8 +140,38 @@ This file is composed by columns that records the values of *state variables* an
 2. Type `./thym_[model] testcase`, so for instance `thym_gr4j test_gr4j`. This will run *GR4J* model for the *test_gr4j* study case. If the model execution is succesfull, the model will log results in the file `results.out` saved within *testcase* directory (e.g. `/test_gr4j`).
 
 
-### Ploting
+### Plotting
 1. Go to `/tools`
 2. Type `./plot_in_out.py ../testcase`, so for instance `./plot_in_out.py ../test_gr4j`. `plot_in_out.py` will plot time series of *simulated* (*q_mm* variable in the `results.out` output file) and *observed* (*runoff_mm* variable in the `meteo.in` input file) runoff in *mm*. The script will plot also all the variables in `meteo.in` file. 
 
 Note that *compilation, execution and plotting* can be performed all at once using the `run.sh` in `/thym` root dir typing `./run.sh testcase` (e.g. `./run.sh test_gr4j`). Every step is performed as long as: `COMP=true EXEC=true  PLOT=true`.
+
+
+## Calibration with OSTRICH
+
+The following are some simple steps to use **Ostrich** for model calibration.
+
+1. Download and compile [Ostrich](https://www.civil.uwaterloo.ca/envmodelling/Ostrich.html).
+
+2. In `/thym` create a `testcase_ostr` (e.g. `test_gr4j_ostr`) directory. This directory serve to implement **Ostrich**.
+
+3. Copy **Ostrich** executables within `testcase_ostr` o create a *symboly link* of the executable within `testcase_ostr` directory.
+- `Ostrich` is the **Linux** executable for *serial* implementation. 
+- `OstrichMPI` is the **Linux** executable for *parallel* implementation. You need to have **MPI** libraries installed. 
+
+4. Create a `model` directory. This directory must contains the *model executable* (e.g. `thym_gr4j`) and model *input files* (e.g `test_gr4j/ctrl.in`). Model *output files* are saved within `model` following the model functioning. You can copy the *model executable* or create a *symboly link* to the executable in the `model` directory. 
+
+5. Set up the *template* control model file. In this case, this file is `ctrl.in.tpl`. In this file, one needs to show which are the parameters aim to be calibrated, this is done by replacing parameter values for *parameter names* (e.g `par_x1`). Note that this *parameter names* are listed in the **Ostrich** control file `ostIn.txt` between `BeginParams` and `EndParams`.
+
+6. Set up the script to execute the model (e.g `ost_thym_gr4j.sh`). The script name is included in `ostIn.txt` (see `ModelExecutable`). Note that **Ostrich** will launch it to run the model every time the parameter set changes. 
+
+7. (optional) Set up an script to save the *best* simulation, (e.g. `save_best.sh`).The script name is included in `ostIn.txt` (see `PreserveBestModel`). This script will create a `best` directory within `ModelSubdir` (see `ostIn.txt`). This script will save the best model output files and model diagnostics. 
+
+8. Edit `ostIn_Unix.txt`. This is **Ostrich** control file, it is `ostIn.txt`, actually. It is important to read **Ostrich** [user's manual](https://www.civil.uwaterloo.ca/envmodelling/Ostrich.html) to understand the structure of the file.  
+
+9. Run **Ostrich** using `run_ost.sh`. This script will:
+
+    1. Clean up the current directory of **Ostrich** output files from previous runs. 
+    2. Copy `ostIn_Unix.txt` into `ostIn.txt`.
+    3. Run **Ostrich** is serial or parallel mode.
+

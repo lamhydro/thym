@@ -362,6 +362,40 @@ void freememo(struct tm *v1, double *v2, double *v3, double *v4, double *v5, dou
    free(v6); 
 }
 
+/* 
+ * Computing the sample mean of a 1d double array x of size n 
+ */
+double mean_double(const unsigned int n, const double *x){
+    if (n == 0) return 0.0;  // avoid division by zero
+                            
+    unsigned int i;
+    double sum = 0;
+    for(i = 0; i < n; i++){
+        sum += x[i];
+    }
+    return sum / n;
+}
+
+/* 
+ * Computing the sample standard deviation of a 1d double array x of size n 
+ */
+double stddev_double(const unsigned int n, const double *x) {
+    if (n < 2) return 0.0;  // avoid division by zero
+
+    double mean = mean_double(n, x);
+
+    double sq_diff_sum = 0;
+    unsigned int i;
+    double diff;
+    for (i = 0; i < n; i++) {
+        diff = x[i] - mean;
+        sq_diff_sum += diff * diff;
+    }
+
+    return sqrtf(sq_diff_sum / (n - 1));  // sample std dev
+}
+
+
 /*
  *  Approximate a float number to next smaller integer e.g. 4.2 to 5
  */

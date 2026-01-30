@@ -43,6 +43,9 @@ int read_init(char *testcase, ininfo *info){
     // Set up the results.out file
     info->resultsoutf = concat_strings(info->tcase, RESULTSOUT_FILE, "/");
 
+    // Set up the diagnostic.out file
+    info->diagnosticoutf = concat_strings(info->tcase, DIAGNOSTICOUT_FILE, "/");
+
     // Free the allocated memory
     //free(info.tcase);
     //free(info.meteoinf);
