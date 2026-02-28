@@ -28,24 +28,12 @@
                
 #if MODEL == 1 // GR4J
                
-/* typedef struct{ */
-    /* double Qa, Qb; */
-/* } chstore; */
-
-
-/*
- * Function prototypes
- */
-int uh1_f(double x4, double **uh, unsigned int *uh_l);
-int uh2_f(double x4, double **uh, unsigned int *uh_l);
-void print_uh(const double *uh, unsigned int uh_l);
-// double Q_f(double Pr, double *uh, int uh_l, float per);   
+    int uh1_f(double x4, double **uh, unsigned int *uh_l);
+    int uh2_f(double x4, double **uh, unsigned int *uh_l);
+    void print_uh(const double *uh, unsigned int uh_l);
 
 #elif MODEL == 2 // HBV
                  
-    /*
-     * Function prototypes
-    */
     void routingModel(const double Qall, const unsigned int j, const int maxbas, double *qrou, double *qsim);
     void backflowModel(const int maxbas, double *qrou);
 

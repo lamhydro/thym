@@ -31,37 +31,6 @@
  * Defining object types
  */
 
-/* Model state variables */
-/* typedef struct { */
-
-    /* #if MODEL == 1 // GR4J */
-    
-        /* double pn; */
-        /* double ps; */
-        /* double pr; */
-        /* double en; */
-        /* double es; */
-        /* double s; */
-        /* double r; */
-        /* double perc; */
-        /* double f; */
-        /* double qa; */
-        /* double qb; */
-        /* double qr; */
-        /* double qd; */
-        /* double q; */
-   
-    /* #elif MODEL == 2 // HBV */
-        
-    /* #elif MODEL == 3 // HYMOD */
-    
-    /* #else // IAHCRES */
-    
-    
-    /* #endif */
-/* } modstvar; */
-
-
 /* Model state variables (other format) */
 typedef struct {
 
@@ -89,7 +58,6 @@ typedef struct {
         double *snow_store;      //State of snow reservoir   
     
     #else // IAHCRES
-    
     
     #endif
 
@@ -143,19 +111,12 @@ typedef struct {
     #endif
 } modfluxv;
 
-
 /*
  * Function prototypes
  */
-// void save_model_results(char *filename, int n, struct tm *timestamp, double *et, double *runoff);
-// void save_model_results(char *filename, const unsigned int n, struct tm *timestamp, const double *et, const modstvar *mostv, const snowstvar *sstvar);
 void save_model_results(char *filename, const unsigned int n, struct tm *timestamp, const modstatev *mstv, const modfluxv *mfxv, const double *et);
-// void save_model_results(char *filename, const int n, struct tm *timestamp, const double *et, const modstvar *mostv);
 void save_model_diagnostic(char *filename, const unsigned int n, const double *obs, const double *sim);
-
-// int allocateMemo_modstatev(const unsigned int size, modstatev *mstv);
 int allocateMemo_modstatev(const unsigned int size, modstatev *mstv, const unsigned int nq);
-// void freeMemo_modstatev(modstatev *mstv);
 void freeMemo_modstatev(const unsigned int size, modstatev *mstv);
 int allocateMemo_modfluxv(const unsigned int size, modfluxv *mfxv);
 void freeMemo_modfluxv(modfluxv *mfxv);

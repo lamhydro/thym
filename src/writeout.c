@@ -271,97 +271,6 @@ void freeMemo_modfluxv(modfluxv *mfxv){
     #endif
 }
 
-
-
-/*
- * Print main model results
- */
-/* void save_model_results(char *filename, const unsigned int n, struct tm *timestamp, const double *et, const modstvar *mostv, const snowstvar *sstvar){ */
-
-    /* FILE *fp = fopen(filename, "w"); */
-    /* if (fp == NULL) { */
-        /* perror("Error opening file"); */
-        /* return; */
-    /* } */
-
-    /* // Write header */
-
-    /* #if MODEL == 1 // GR4J */
-        /* #if SNOWM == 0 // NO SNOW CALCULATIONS */
-            /* fprintf(fp, "datetime,et_mm,pn_mm,ps_mm,pr_mm,en_mm,es_mm,s_mm,r_mm,perc_mm,f_mm,qa_mm,qb_mm,qr_mm,qd_mm,q_mm\n"); */
-
-        /* #elif SNOWM == 1 //  */
-            /* fprintf(fp, "datetime,rainfall_mm,snowfall_mm,sno_mm,tsnow_oC,snomlt_mm,eres_mm,et_mm,pn_mm,ps_mm,pr_mm,en_mm,es_mm,s_mm,r_mm,perc_mm,f_mm,qa_mm,qb_mm,qr_mm,qd_mm,q_mm\n"); */
-        /* #endif */
-    /* #elif MODEL == 2 // HBV */
-        /* #if SNOWM == 0 // NO SNOW CALCULATIONS */
-        /* #elif SNOWM == 1 //  */
-        /* #endif */
-   
-    
-    /* #elif MODEL == 3 // HYMOD */
-    
-        /* #if SNOWM == 0 // NO SNOW CALCULATIONS */
-        /* #elif SNOWM == 1 //  */
-        /* #endif */
-    
-    /* #else // IAHCRES */
-        /* #if SNOWM == 0 // NO SNOW CALCULATIONS */
-        /* #elif SNOWM == 1 //  */
-        /* #endif */
-    
-    
-    /* #endif */
-
-
-
-
-    /* unsigned int i; */
-    /* char buffer[30]; */
-    /* for (i = 0; i < n; i++) { */
-        /* [> printf("year: %d, month: %d, day: %d, jday: %d\n", timestamp[i].tm_year, timestamp[i].tm_mon,timestamp[i].tm_mday, timestamp[i].tm_yday+1); <] */
-        /* // Format timestamp as YYYY-MM-DD HH:MM:SS */
-        /* timestamp[i].tm_year -= 1900; */
-        /* timestamp[i].tm_mon -= 1; */
-        /* strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", &timestamp[i]); */
-
-        /* #if MODEL == 1 // GR4J */
-            /* #if SNOWM == 0 // NO SNOW CALCULATIONS */
-                /* fprintf(fp, "%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n", buffer, et[i], mostv[i].pn, mostv[i].ps, mostv[i].pr, mostv[i].en, mostv[i].es, mostv[i].s, mostv[i].r, mostv[i].perc, mostv[i].f, mostv[i].qa, mostv[i].qb, mostv[i].qr, mostv[i].qd, mostv[i].q); */
-            
-            /* #elif SNOWM == 1 //  */
-                /* fprintf(fp, "%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n", buffer, sstvar->rainfall[i], sstvar->snowfall[i], sstvar->sno[i], sstvar->tsnow[i], sstvar->snomlt[i], sstvar->eres[i], et[i], mostv[i].pn, mostv[i].ps, mostv[i].pr, mostv[i].en, mostv[i].es, mostv[i].s, mostv[i].r, mostv[i].perc, mostv[i].f, mostv[i].qa, mostv[i].qb, mostv[i].qr, mostv[i].qd, mostv[i].q); */
-             /* #endif */
-
-        /* #elif MODEL == 2 // HBV */
-            /* #if SNOWM == 0 // NO SNOW CALCULATIONS */
-            /* #elif SNOWM == 1 //  */
-            /* #endif */
-   
-        
-        /* #elif MODEL == 3 // HYMOD */
-        
-            /* #if SNOWM == 0 // NO SNOW CALCULATIONS */
-            /* #elif SNOWM == 1 //  */
-            /* #endif */
-        
-        /* #else // IAHCRES */
-            /* #if SNOWM == 0 // NO SNOW CALCULATIONS */
-            /* #elif SNOWM == 1 //  */
-            /* #endif */
-        
-        
-        /* #endif */
-
-
-            /* } */
-
-    /* fclose(fp); */
-    /* [> printf("Time series written to %s\n", filename); <] */
-
-/* } */
-
-
 /*
  * Write out state and flux variables in 'results.out' file.
  */
@@ -377,13 +286,13 @@ void save_model_results(char *filename, const unsigned int n, struct tm *timesta
 
     #if MODEL == 1 // GR4J
 
-            fprintf(fp, "datetime,rainfall_mm,snowfall_mm,sno_mm,tsnow_oC,snomlt_mm,eres_mm,et_mm,pn_mm,ps_mm,pr_mm,en_mm,es_mm,s_mm,r_mm,perc_mm,f_mm,qa_mm,qb_mm,qr_mm,qd_mm,q_mm\n");
+            fprintf(fp, "datetime,rainfall_mm,snowfall_mm,sno_mm,tsnow_oC,snomlt_mm,eres_mm,pn_mm,ps_mm,pr_mm,en_mm,es_mm,s_mm,r_mm,perc_mm,f_mm,qa_mm,qb_mm,qr_mm,qd_mm,q_mm,et_mm\n");
 
     #elif MODEL == 2 // HBV
-        fprintf(fp, "datetime,sowat_mm,sdep_mm,ldep_mm,stw1_mm,stw2_mm,q_mm,acet_mm\n");
+        fprintf(fp, "datetime,sowat_mm,sdep_mm,ldep_mm,stw1_mm,stw2_mm,acet_mm,q_mm,et_mm\n");
 
     #elif MODEL == 3 // HYMOD
-        fprintf(fp, "datetime,xhuz_mm,snow_store_mm,ae_mm,ov_mm,qq_mm,qs_mm,q_mm,snow_mm,melt_mm,pe_mm\n");
+        fprintf(fp, "datetime,xhuz_mm,snow_store_mm,ae_mm,ov_mm,qq_mm,qs_mm,snow_mm,melt_mm,pe_mm,q_mm,et_mm\n");
     
     #endif
 
@@ -398,15 +307,15 @@ void save_model_results(char *filename, const unsigned int n, struct tm *timesta
 
         #if MODEL == 1 // GR4J
                        
-                fprintf(fp, "%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n", buffer, mfxv->rainfall[i], mfxv->snowfall[i], mfxv->sno[i], mstv->tsnow[i], mfxv->snomlt[i], mfxv->eres[i], et[i], mfxv->pn[i], mfxv->ps[i], mfxv->pr[i], mfxv->en[i], mfxv->es[i], mstv->s[i], mstv->r[i], mfxv->perc[i], mfxv->f[i], mfxv->qa[i], mfxv->qb[i], mfxv->qr[i], mfxv->qd[i], mfxv->q[i]);
+                fprintf(fp, "%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n", buffer, mfxv->rainfall[i], mfxv->snowfall[i], mfxv->sno[i], mstv->tsnow[i], mfxv->snomlt[i], mfxv->eres[i], mfxv->pn[i], mfxv->ps[i], mfxv->pr[i], mfxv->en[i], mfxv->es[i], mstv->s[i], mstv->r[i], mfxv->perc[i], mfxv->f[i], mfxv->qa[i], mfxv->qb[i], mfxv->qr[i], mfxv->qd[i], mfxv->q[i], et[i]);
 
         #elif MODEL == 2 // HBV
    
-            fprintf(fp,"%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8e,%.8lf\n",buffer, mstv->sowat[i], mstv->sdep[i], mstv->ldep[i], mstv->stw1[i], mstv->stw2[i], mfxv->q[i], mfxv->acet[i]);
+            fprintf(fp,"%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n",buffer, mstv->sowat[i], mstv->sdep[i], mstv->ldep[i], mstv->stw1[i], mstv->stw2[i], mfxv->acet[i], mfxv->q[i], et[i]);
         
         #elif MODEL == 3 // HYMOD
         
-            fprintf(fp,"%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n",buffer, mstv->xhuz[i], mstv->snow_store[i], mfxv->ae[i], mfxv->ov[i], mfxv->qq[i], mfxv->qs[i], mfxv->q[i], mfxv->snow[i], mfxv->melt[i], mfxv->pe[i]);
+            fprintf(fp,"%s,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf,%.8lf\n",buffer, mstv->xhuz[i], mstv->snow_store[i], mfxv->ae[i], mfxv->ov[i], mfxv->qq[i], mfxv->qs[i], mfxv->snow[i], mfxv->melt[i], mfxv->pe[i], mfxv->q[i], et[i]);
         
         #else // IAHCRES
         

@@ -27,8 +27,6 @@
 #include <math.h>
 
 #include "utils.h"
-// #include "snow.h"
-// #include "evapotrans.h"
 
 /*
  * Defining constants
@@ -49,7 +47,7 @@ typedef struct {
 
 typedef struct {
     struct tm *timestamp;
-    double *tave, *tmin, *tmax, *precip, *runoff, *srad;
+    double *tave, *tmin, *tmax, *precip, *windv, *runoff;
 } meteoin;
 
 typedef struct {
@@ -64,41 +62,18 @@ typedef struct {
     char name[MAX_LINE_LENGTH];
 } ctrlbasic;
 
-typedef struct {
-    int nvarout;
-    char **varout;
-    int dtout;
-} ctrlout;
+/* typedef struct { */
+    /* int nvarout; */
+    /* char **varout; */
+    /* int dtout; */
+/* } ctrlout; */
 
 typedef struct{
     char etmethod[10];
     double *et;
+    double albedo;
+    double u_alt;
 } evapot;
-
-/* typedef struct{ */
-    /* #if MODEL == 1 // GR4J */
-        /* #if SNOWM == 0 //  */
-        /* #elif SNOWM == 1 //  */
-            /* double trs; */
-            /* double tmlt; */
-            /* double sno50; */
-            /* double sno100; */
-            /* double ls; */
-            /* double bmlt6; */
-            /* double bmlt12; */
-        /* #endif */
-    /* #elif MODEL == 2 // HBV */
-    
-    
-    /* #elif MODEL == 3 // HYMOD */
-    
-    
-    /* #else // IAHCRES */
-    
-    
-    /* #endif */
-
-/* } snowparam; */
 
 
 typedef struct {
@@ -167,13 +142,13 @@ typedef struct {
  * Function prototypes
  */
 // int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod, snowparam *snowp);
-int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod);
+int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, modparam *modp, evapot *evp);
 //int read_ctrl(char *ctrlf);
 int get_time_interval_meteo_in(char *meteof, struct tm sdt, struct tm edt, meteoini *metinii);
 int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, double *et); 
 int read_init(char *testcase, ininfo *info);
 void freeininfo(ininfo *info);
-void freectrlout(ctrlout *ctrlo);
+// void freectrlout(ctrlout *ctrlo);
 int allocateMemo(int size, meteoin *metin);
 
 #endif // End of include guard

@@ -24,16 +24,13 @@
 
 #if MODEL == 1 // GR4J
 
-typedef struct{
-    double pn, en, ps, es;
-} icstore;
-
-/*
- * Function prototypes
- */
-int pn_en(double p, double e, double *pn, double *en);
-double ps_f(double pn, double x1, double s);
-double es_f(double en, double x1, double s);
+/*     typedef struct{ */
+        /* double pn, en, ps, es; */
+    /* } icstore; */
+    
+    int pn_en(double p, double e, double *pn, double *en);
+    double ps_f(double pn, double x1, double s);
+    double es_f(double en, double x1, double s);
 
 #elif MODEL == 2 // HBV
 

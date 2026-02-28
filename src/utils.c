@@ -353,13 +353,14 @@ void print_centered(const char *text, int width) {
 /*
  * Free memory from a series of 1d arrays
  */
-void freememo(struct tm *v1, double *v2, double *v3, double *v4, double *v5, double *v6){
+void freememo(struct tm *v1, double *v2, double *v3, double *v4, double *v5, double *v6, double *v7){
    free(v1); 
    free(v2); 
    free(v3); 
    free(v4); 
    free(v5); 
    free(v6); 
+   free(v7); 
 }
 
 /* 

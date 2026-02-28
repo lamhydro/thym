@@ -53,21 +53,6 @@ int uh1_f(double x4, double **uh, unsigned int *uh_l){
         }     
         free(sh);   
     }
-/*     for (t = 0; t <= x4i; t++){ */
-        /* if(t==0){ */
-            /* sh[t] = 0.0; */
-        /* }else if(t>0 && t<x4i){ */
-            /* sh[t] = pow(t/x4,(5.0/2.0)); */
-        /* }else{ */
-            /* sh[t] = 1.0; */
-        /* } */
-    /* } */
-
-    /* printf("x4 = %f, x4i =%d\n", x4, x4i); */
-   /*  for (t = 1; t <= x4i; t++){ */
-      /* uh[t-1] = sh[t]-sh[t-1]; */
-      /* printf("uh1[%d]=%f\n", t-1, uh[t-1]); */
-    /* } */
     return 0;
 }
 
@@ -122,34 +107,6 @@ int uh2_f(double x4, double **uh, unsigned int *uh_l){
         }
         free(sh);
     }
-
-    /* int t; */
-    /* int x4i = (int)ceil(x4); */
-    /* int dummy = 2*x4i; */
-
-    /* if (x4 <= 0.5){ */
-
-        /* float sh2[1]; */
-    /* } */
-
-    /* for (t = 0; t <= dummy; t++){ */
-        /* if(t==0){ */
-            /* sh2[t] = 0.0; */
-        /* }else if(t>0 && t<=x4i){ */
-            /* sh2[t] = 0.5*pow(t/x4,(5.0/2.0)); */
-        /* }else if(t>x4i && t<dummy){ */
-            /* sh2[t] = 1.0 - 0.5*pow(2.0 - (t/x4),(5.0/2.0)); */
-        /* }else{ */
-            /* sh2[t] = 1.0; */
-        /* } */
-        /* printf("sh2[%d] = %f\n", t, sh2[t]); */
-    /* } */
-
-    /* printf("2*x4 = %f\n", 2*x4); */
-    /* for (t = 1; t <= dummy; t++){ */
-      /* uh2[t-1] = sh2[t]-sh2[t-1]; */
-      /* printf("uh2[%d]=%f\n", t-1, uh2[t-1]); */
-    /* } */
 
     return 0;
 }

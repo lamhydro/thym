@@ -25,17 +25,14 @@
 
 #if MODEL == 1 // GR4J
 
-typedef struct{
-    double R, F, Qr, Qd;
-} aqstore;
+/* typedef struct{ */
+    /* double R, F, Qr, Qd; */
+/* } aqstore; */
                
-/*
- * Function prototypes
- */
-double water_exch(double x2, double x3, double R);
-double R_f1(double R, double Qa, double F);
-double Qr_f(double R, double x3);
-double Qd_f(double Qb, double F);
+    double water_exch(double x2, double x3, double R);
+    double R_f1(double R, double Qa, double F);
+    double Qr_f(double R, double x3);
+    double Qd_f(double Qb, double F);
 
 #elif MODEL == 2 // HBV
 

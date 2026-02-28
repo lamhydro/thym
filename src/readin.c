@@ -45,14 +45,7 @@ int read_init(char *testcase, ininfo *info){
 
     // Set up the diagnostic.out file
     info->diagnosticoutf = concat_strings(info->tcase, DIAGNOSTICOUT_FILE, "/");
-
-    // Free the allocated memory
-    //free(info.tcase);
-    //free(info.meteoinf);
-
-    // Set meteo.in
-    
-    // Set meteo.in
+   
     return 0;
 }
 
@@ -69,20 +62,19 @@ void freeininfo(ininfo *info){
 /*
  * Free memory allocated for ctrlout struct
  */
-void freectrlout(ctrlout *ctrlo){
-    int i;
-    for (i = 0; i < ctrlo->nvarout; i++){
-        free(ctrlo->varout[i]);
-    }
-    free(ctrlo->varout);
-}
+/* void freectrlout(ctrlout *ctrlo){ */
+    /* int i; */
+    /* for (i = 0; i < ctrlo->nvarout; i++){ */
+        /* free(ctrlo->varout[i]); */
+    /* } */
+    /* free(ctrlo->varout); */
+/* } */
 
 /*
  * Read ctrl.in file exept model name and parameters
  */
-//int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, ctrlparam *ctrlp){
-/* int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod, snowparam *snowp){ */
-int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, char *etmethod){
+/* int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, evapot *evp){ */
+int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, modparam *modp, evapot *evp){
 
     char line[MAX_LINE_LENGTH];
 
@@ -162,25 +154,23 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
         fscanf(file,"\n");
 
         // Read block of information related to output variables
-        char *line1 = NULL;  // Pointer to hold the line
-        line1 = my_getline_to_char('!',file);
+/*         char *line1 = NULL;  // Pointer to hold the line */
+        /* line1 = my_getline_to_char('!',file); */
 
-        //ctrlout ctrlo;
-        ctrlo->varout = get_strings_into_array(line1, &ctrlo->nvarout);
-        free(line1); // Free the memory allocated by getline()
-        // Output the words to verify they were read correctly
-        printf("Output variables are:\t");
-        for (int i = 0; i < 4; i++) {
-            printf("%s\t", ctrlo->varout[i]);
-            //free(strarray[i]);  // Free the allocated memory for each word
-        }
-        printf("\n");
-
-        fgets(line, sizeof(line), file);
-        sscanf(line, "%d", &ctrlo->dtout);
-            printf("Timestep to write output variables: %d\n", ctrlo->dtout);
-
-        fscanf(file,"\n");
+        /* //ctrlout ctrlo; */
+        /* ctrlo->varout = get_strings_into_array(line1, &ctrlo->nvarout); */
+        /* free(line1); // Free the memory allocated by getline() */
+        /* // Output the words to verify they were read correctly */
+        /* printf("Output variables are:\t"); */
+        /* for (int i = 0; i < 4; i++) { */
+            /* printf("%s\t", ctrlo->varout[i]); */
+            /* //free(strarray[i]);  // Free the allocated memory for each word */
+        /* } */
+        /* printf("\n"); */
+        /* fgets(line, sizeof(line), file); */
+        /* sscanf(line, "%d", &ctrlo->dtout); */
+            /* printf("Timestep to write output variables: %d\n", ctrlo->dtout); */
+        /* fscanf(file,"\n"); */
 
         // Read block of information related to parameters
 /*         fgets(line, sizeof(line), file); */
@@ -197,16 +187,20 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, ctrlout *ctrlo, modparam *modp, cha
 
         // Read  evapotranspiration method
         fgets(line, sizeof(line), file);
-        sscanf(line, "%9s", etmethod);
-        printf("Evapotranspiration method: %s\n", etmethod);
+        sscanf(line, "%9s", evp->etmethod);
+        printf("Evapotranspiration method: %s\n", evp->etmethod);
 
+
+        // Read  evapotranspiration information
+        fgets(line, sizeof(line), file);
+		sscanf(line, "%lf %lf", &evp->albedo, &evp->u_alt);
+        printf("Albedo =  %lf, u_alt = %lf [m]\n", evp->albedo, evp->u_alt);
         fscanf(file,"\n");
 
         // Read hydrological model name
         fgets(line, sizeof(line), file);
         sscanf(line, "%9s", modp->model);
         printf("Hydrological model: %s\n", modp->model);
-
 
         fgets(line, sizeof(line), file);
         #if MODEL == 1 // GR4J
@@ -304,10 +298,6 @@ int get_time_interval_meteo_in(char *meteof, struct tm sdt, struct tm edt, meteo
         /* dummyt.tm_mon += 1; */
         dummyt.tm_isdst = -1;
         
-/*         printf("Timestamp: %04d-%02d-%02d %02d:%02d:%02d\n", dummyt.tm_year, dummyt.tm_mon, dummyt.tm_mday,dummyt.tm_hour, dummyt.tm_min, dummyt.tm_sec); */
-        /* printf("Timestamp_start: %04d-%02d-%02d %02d:%02d:%02d\n", sdt.tm_year, sdt.tm_mon, sdt.tm_mday,sdt.tm_hour, sdt.tm_min, sdt.tm_sec); */
-        /* printf("Timestamp_end: %04d-%02d-%02d %02d:%02d:%02d\n", edt.tm_year, edt.tm_mon, edt.tm_mday,edt.tm_hour, edt.tm_min, edt.tm_sec); */
-
         // Coverting to an elapsed time
         dtime = mktime(&dummyt);
         //printf("dtime: %ld\n", dtime);
@@ -361,7 +351,7 @@ int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, d
     // Read the meteo data    
     unsigned int i = NHEADER_LINES_METEOIN;
     unsigned int j = 0;
-    char *timestamp_str, *value1_str, *value2_str, *value3_str, *value4_str, *value5_str, *value6_str;
+    char *timestamp_str, *value1_str, *value2_str, *value3_str, *value4_str, *value4a_str, *value5_str, *value6_str;
     /* printf("sdt: %d, edt: %d, ntimes: %d \n", metini->sdt, metini->edt, metini->ntimes);  */
     while (fgets(line, sizeof(line), file)) {
         if (i >= metini->sdt && i <= metini->edt){
@@ -373,6 +363,7 @@ int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, d
             value2_str = strtok(NULL, ",");
             value3_str = strtok(NULL, ",");
             value4_str = strtok(NULL, ",");
+            value4a_str = strtok(NULL, ",");
             value5_str = strtok(NULL, ",");
             value6_str = strtok(NULL, ",");
     
@@ -399,14 +390,11 @@ int read_meteo(char *meteof, meteoin *metin, meteoini *metini, struct tm *dts, d
             metin->tmin[j] = atof(value2_str);
             metin->tmax[j] = atof(value3_str);
             metin->precip[j] = atof(value4_str);
+            metin->windv[j] = atof(value4a_str);
             et[j] = atof(value5_str);
             metin->runoff[j] = atof(value6_str);
             /* metin->srad[j] = atof(value6_str); */
     
-            // Print the parsed data
-            /* printf("Timestamp: %04d-%02d-%02d %02d:%02d:%02d,  Temp(oC): %.2f, Precip(mm): %.2f\n", */
-                   /* metin[i].timestamp.tm_year, metin[i].timestamp.tm_mon, metin[i].timestamp.tm_mday, */
-                   /* metin[i].timestamp.tm_hour, metin[i].timestamp.tm_min, metin[i].timestamp.tm_sec, metin[i].temp, metin[i].precip); */
             j++;
         }
         i++;
@@ -425,6 +413,7 @@ int allocateMemo(int size, meteoin *metin){
     metin->tmin = (double *)malloc(size * sizeof(double));
     metin->tmax = (double *)malloc(size * sizeof(double));
     metin->precip = (double *)malloc(size * sizeof(double));
+    metin->windv = (double *)malloc(size * sizeof(double));
     metin->runoff = (double *)malloc(size * sizeof(double));
     // Check if malloc succeeded
     if (!metin->timestamp || !metin->tave || !metin->tmin || !metin->tmax || !metin->precip || !metin->runoff) {
@@ -434,6 +423,7 @@ int allocateMemo(int size, meteoin *metin){
         free(metin->tmin);
         free(metin->tmax);
         free(metin->precip);
+        free(metin->windv);
         free(metin->runoff);
         /* free(metin->srad); */
         return 1;

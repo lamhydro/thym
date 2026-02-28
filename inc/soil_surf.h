@@ -43,7 +43,6 @@ double percolation(double s, double x1);
 
 #else // IAHCRES
 
-
 #endif
 
 #endif // End of include guard

@@ -16,7 +16,7 @@ orig_dir=$(pwd) # Save the current directory
 
 # GET MODEL NAME
 cd "$testcase" || exit 1 # Change to the target directory 
-mod_name=$(awk 'NR==15 {print $1}' ctrl.in) # Model name
+mod_name=$(awk 'NR==13 {print $1}' ctrl.in) # Model name
 case "$mod_name" in
     gr4j)
         mod_number=1

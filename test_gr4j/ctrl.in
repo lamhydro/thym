@@ -7,11 +7,8 @@ NAME                            ! Watershed name and hydrometric station
 2017 12 31 00 00 00	            ! End time (yyyy mm dd hr[0 23] min[0 59] sec[0 59])
 86400   			            ! Time step (s)
 
-runoff disch infil evapot       ! Variables to write out
-3600.			                ! Interval for writing output (s)
-
-obs                           ! PET method ['obs', 'hamon0', 'hamon1', 'priestley']
+pen-mon                          ! PET method ['obs', 'hamon0', 'hamon1', 'pen-mon']
+0.2 10.0                        ! [Albedo] [Altitute at wich wind speed is measured (usally 10 m overground)]  
 
 gr4j                            ! Model's name 
 650.923868816329 -3.91936142662807 68.3037161810372 1.15750566325813 -2.83991936040818 -1.18136487423606 0.999985545799455 404.525758356482 0.999995301979873 0.772937105715276 0.905249612044592                    ! Models parameters: param1 param2 param3 param4 [Snow model parameters]
-

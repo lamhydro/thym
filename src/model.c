@@ -27,22 +27,6 @@
 
     void gr4j(const unsigned int ntimes, const double *tav, const double *precip, const double *tmax, const double *et, const modparam *modp, modstatev *mstv, modfluxv *mfxv, struct tm *timestamp){
 
-/*         double pn; */
-        /* double ps; */
-        /* double pr; */
-        /* double en; */
-        /* double es; */
-        /* double s; */
-        /* double r; */
-        /* double perc; */
-        /* double f; */
-        /* double qa; */
-        /* double qb; */
-        /* double qr; */
-        /* double qd; */
-        /* double q; */
- 
-    /* double p, e, pn, en, ps, es, s, perc, pr, f, r, qr, qa, qb, qd; */
     double p, e;
 
     unsigned int i;

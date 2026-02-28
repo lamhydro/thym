@@ -30,15 +30,6 @@
 
 #if MODEL == 1 // GR4J
 
-    //int gr4j(float p, float e, float x1, float x2, float x3, int x4);
-    // int gr4j(meteoin *metin, evapot *evp, modparam modp, int ntimes);
-    // int gr4j(double *precip, double *et, double x1, double x2, double x3, double x4, int ntimes, double *runoff_s);
-    // int gr4j(double *precip, double *et, double x1, double x2, double x3, double x4, int ntimes, double *runoff_s, modstvar *mostv);
-    // int gr4j(double *precip, double *et, modparam *modp, int ntimes, modstvar *mostv);
-    // int gr4j(const double *precip, const double *et, const modparam *modp, const int ntimes, modstvar *mostv);
-    
-    // int gr4j(const double *rainfall, const double *snomlt, const double *eres, const modparam *modp, const unsigned int ntimes, modstvar *mostv);
-
     void gr4j(const unsigned int ntimes, const double *tav, const double *precip, const double *tmax, const double *et, const modparam *modp, modstatev *mstv, modfluxv *mfxv, struct tm *timestamp);
        
 
@@ -51,7 +42,6 @@
     void hymod(const unsigned int ntimes, const double *tav, const double *precip,  const double *et, const modparam *modp, modstatev *mstv, modfluxv *mfxv);
 
 #else // IAHCRES
-
 
 #endif
 
