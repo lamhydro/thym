@@ -37,19 +37,17 @@ This is the control or steering file for **thym**. This file has the following s
 | row 7  | End time (yyyy mm dd hr[0 23] min[0 59] sec[0 59])      |
 | row 8  | Time step (s)                                           |
 | row 9  |                                                         |
-| row 10 | Variables to write out (NOT USED)                       |
-| row 11 | Interval for writing output (s) (NOT USED)              |
+| row 10 | PET method ['obs', 'hamon0', 'hamon1', 'pen-mon']     |
+| row 11 | [Albedo] [wind speeed altitute (usually 10 m overgr.)]  |
 | row 12 |                                                         |
-| row 13 | PET method ['obs', 'hamon0', 'hamon1', 'priestley']     |
-| row 14 |                                                         |
-| row 15 | Model's name ['gr4j' 'hbv' 'hymod']                     |
-| row 16 | Model's parameters                                      |
+| row 13 | Model's name ['gr4j' 'hbv' 'hymod']                     |
+| row 14 | Model's parameters                                      |
 
 
 Note that:
-- In *row 13*: The user can chose the method to estimated the daily *potential evapotranspiration* among the following options: *obs* [observed precomputed values introduced through the `meteo.in` file], *hamon0* [Hamon method version 0], *hamon1* [Hamon method version 1 (more standard)] and *priestly* [Priestley method].  
+- In *row 10*: The user can chose the method to estimated the daily *potential evapotranspiration* among the following options: *obs* [observed precomputed values introduced through the `meteo.in` file], *hamon0* [Hamon method version 0], *hamon1* [Hamon method version 1 (more standard)] and *pen-mon* [Penman-monteith method].  
 
-- In *row 16*: This row contains the parameters corresponding to the model in *row 15*. According to the model, the parameters are as follow:
+- In *row 14*: This row contains the parameters corresponding to the model in *row 15*. According to the model, the parameters are as follow:
 
 #### GR4J
 
@@ -103,10 +101,10 @@ Note that the parameters *x1*, *x2*, *x3* and *x4* are often subjected to calibr
 ### `meteo.in` file 
 This file contains the *meterological data* recorded within the catchment. This file has the following columns:
 
-| datetime            | tave_oC | tmin_oC | tmax_oC | precip_mm | evapt_mm | runoff_mm |
-|---------------------|---------|---------|---------|-----------|----------|-----------|
-| 1981-01-01 00:00:00 | -3.5    | 0.0     | 0.0     | 7.21      | 0.0      | 1.0502    |
-| ...                 | ...     | ...     | ...     | ...       | ...      | ...       |
+| datetime            | tave_oC | tmin_oC | tmax_oC | precip_mm | windv_m/s | evapt_mm | runoff_mm |
+|---------------------|---------|---------|---------|-----------|-----------|----------|-----------|
+| 1981-01-01 00:00:00 | -3.5    | 0.0     | 0.0     | 7.21      | 0.0       | 0.0      | 1.0502    |
+| ...                 | ...     | ...     | ...     | ...       | ...       |...       | ...       |
 
 where:
 
@@ -115,13 +113,27 @@ where:
 - *tmin_oC*: Daily minimum air temperature [$^oC$].
 - *tmax_oC*: Daily maximum air temperature [$^oC$].
 - *precip_mm*: Daily precipitation [$mm$].
-- *evapt_mm*: Daily potential evapotranspiration [$mm$]. This can be either calculated within the model (see `ctrl.in` file) or can be introduced in this file. If the *evapotranspiration* is calculated within the model, this column can be equal to 0. 
+- *windv_m/s*: Daily daily wind speed [$mm$]. Used to estimate potential evapotranspiration using, for instance, Penman-Monteith method. Note that the altitude at which *windv* is measured is indicated at row 11 in `ctrl.in` file. Set this column to 0.0 is not needed by the evapotranspiration method. 
+- *evapt_mm*: Daily observed potential evapotranspiration [$mm$]. Optionally, this can be calculated within the model (see `ctrl.in` file) using different methods. If the *evapotranspiration* is calculated within the model, this column can be equal to 0. 
 - *runoff_mm*: Daily runoff at the outlet of the basin [$mm$].
 
 and the output file:
 
 ### `results.out` file 
 This file is composed by columns that records the values of *state variables* and *flux variables* for each simulated day. The variables (columns) are different for each model. Note that the most relevant variable, the *total catchment runoff* is called *q_mm* for any model and is given in *mm*. 
+
+### `diagnostic.out`
+This file contains some statistics to assess the model performance based on the simulated (*q_mm* in `results.out`) and the observed runoff (*runoff_mm* in `meteo.in`). The file has the following structure: *<STAT>,<VAL>*. Below are the estimated *STAT*s:
+
+- *NSE*: Nash-Sutcliffe efficiency
+- *LNSE*: Log Nash-Sutcliffe efficiency
+- *RMSE*: Root-mean-squared error
+- *PBIAS*: Percentage bias
+- *ABSER*: Average absolute error
+- *ABSMAXER*: Maximum absolute error
+- *PDIFF*: Peak difference
+- *ERCOR*: Correlation of error
+- *NSC*: Number of sign changes
 
 ## Compilation, execution and plotting
 
