@@ -289,11 +289,12 @@ The following are some simple steps to use **Ostrich** for model calibration.
 
 7. (optional) Set up an script to save the *best* simulation, (e.g. `save_best.sh`).The script name is included in `ostIn.txt` (see `PreserveBestModel`). This script will create a `best` directory within `ModelSubdir` (see `ostIn.txt`). This script will save the best model output files and model diagnostics. 
 
-8. Edit `ostIn_Unix.txt`. This is **Ostrich** control file, it is `ostIn.txt`, actually. It is important to read **Ostrich** [user's manual](https://www.civil.uwaterloo.ca/envmodelling/Ostrich.html) to understand the structure of the file.  
+8. Edit `ostIn_Serial.txt` or `ostIn_Parallel.txt` eithe you want to run in serial or parallel mode. This is **Ostrich** control file, it is `ostIn.txt`, actually. It is important to read **Ostrich** [user's manual](https://www.civil.uwaterloo.ca/envmodelling/Ostrich.html) to understand the structure of the file.  
 
 9. Run **Ostrich** using `run_ost.sh`. This script will:
 
     1. Clean up the current directory of **Ostrich** output files from previous runs. 
-    2. Copy `ostIn_Unix.txt` into `ostIn.txt`.
-    3. Run **Ostrich** is serial or parallel mode.
+    2. Create the `model` dir if not exist and create the model input dir in it including a link to model executable.
+    3. Copy `ostIn_Serial.txt` into `ostIn.txt` or `ostIn_Parallel.txt` into `ostIn.txt`
+    4. Run **Ostrich** in serial or parallel mode. Note that in each iteration **Ostrich** will use the template `ctrl.in.tpl` file to change the `ctrl.in` file. 
 
