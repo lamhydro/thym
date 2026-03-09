@@ -7,7 +7,7 @@ GUADALUPE RIVER NR SPRING BRANCH, TX    ! Watershed name and hydrometric station
 1972 09 29 00 00 00	                    ! End time (yyyy mm dd hr[0 23] min[0 59] sec[0 59])
 86400   			                    ! Time step (s)
 
-pen-mon                         ! PET method ['obs', 'hamon0', 'hamon1', 'pen-mon']
+hamon1                         ! PET method ['obs', 'hamon0', 'hamon1', 'pen-mon']
 0.2 10.0                        ! [Albedo] [Altitute at wich wind speed is measured (usally 10 m overground)]  
 
 hymod                                   ! Model's name 

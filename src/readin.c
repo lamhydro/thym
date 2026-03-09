@@ -57,6 +57,7 @@ void freeininfo(ininfo *info){
     free(info->meteoinf);
     free(info->ctrlinf);
     free(info->resultsoutf);
+    free(info->diagnosticoutf);
 }
 
 /*

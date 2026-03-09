@@ -1,19 +1,29 @@
-ProgramType  	    DDS
-ObjectiveFunction   GCOP
-ModelExecutable     ./ost_thym_gr4j.sh
-PreserveBestModel   ./save_best.sh
+#Basic Configuration Data for Ostrich Program
+#ProgramType APPSO
+#ProgramType ParallelDDS
+#ProgramType ParticleSwarm
+#ProgramType ModelEvaluations
+ProgramType DDS
+#ProgramType ShuffledComplexEvolution
 
-ModelSubdir processor_
+ModelExecutable ./ost_thym_gr4j.sh
+ModelSubdir mod
+ObjectiveFunction GCOP
+
+PreserveModelOutput no
+
+PreserveBestModel ./save_best.sh
 
 BeginExtraDirs
-model
+ model 
 EndExtraDirs
 
+#Template File Configuration
 BeginFilePairs
   ctrl.in.tpl;	ctrl.in
 EndFilePairs
 
-#Parameter/DV Specification
+#Real-valued Parameters
 BeginParams
 #parameter	   init.	 low		high	tx_in  tx_ost tx_out
 par_x1		random		100		1200	none   none 	none
@@ -22,9 +32,17 @@ par_x3  	random		20		300	none   none 	none
 par_x4  	random		1.1		2.9 	none   none	none
 EndParams
 
+
+#Integer-valued Parameters
+BeginIntegerParams
+#parameter	   init.	 low		high
+#maxbas         random    24		120 
+EndIntegerParams
+
+
 BeginResponseVars
-  #name	  filename			        keyword		line	col	token
-  #NS      ./model/output/Irondequoit_Diagnostics.csv;	OST_NULL	1	4	','
+#name   filename            keyword         line    col     token
+#SSE     TUSWAMP.obs ;        Total           0       5       ' '
   NS      ./model/test_gr4j/diagnostic.out;	OST_NULL	1	2	','
 EndResponseVars
 
@@ -38,8 +56,6 @@ BeginGCOP
 EndGCOP
 
 BeginConstraints
-	# not needed when no constraints, but PenaltyFunction statement above is required
-	# name     type     penalty    lwr   upr   resp.var
 EndConstraints
 
 # Randomsed control added
@@ -56,3 +72,4 @@ BeginDDSAlg
 	#       model input files IF 'extract' option used in BeginParams
 	#       block (column 'init')
 EndDDSAlg
+

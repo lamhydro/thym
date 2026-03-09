@@ -156,11 +156,121 @@ This file contains some statistics to assess the model performance based on the 
 1. Go to `/tools`
 2. Type `./plot_in_out.py ../testcase`, so for instance `./plot_in_out.py ../test_gr4j`. `plot_in_out.py` will plot time series of *simulated* (*q_mm* variable in the `results.out` output file) and *observed* (*runoff_mm* variable in the `meteo.in` input file) runoff in *mm*. The script will plot also all the variables in `meteo.in` file. 
 
-Note that *compilation, execution and plotting* can be performed all at once using the `run.sh` in `/thym` root dir typing `./run.sh testcase` (e.g. `./run.sh test_gr4j`). Every step is performed as long as: `COMP=true EXEC=true  PLOT=true`.
+Note that *compilation, execution and plotting* can be performed all at once using the `run.sh` in `/thym` root dir typing `./run.sh testcase valgrind` (e.g. `./run.sh test_gr4j yes`). Every step is performed as long as: `COMP=true EXEC=true  PLOT=true`. Note that `valgrind` can be `yes` or something else. *valgrind=yes* the model is ran and memory leaks are checked. The option `yes` must be chosen when  new developments are added to the model and memory leaks need to be checked.
 
 
-## Calibration with OSTRICH
+## Calibration and optimization with OSTRICH
 
+### **Ostrich** features
+- Perform calibration and optimization of environmental models. Ideally, models must:
+    - use a text-based input/output file format. However, **Ostrich** can work with models that use **MS Acces** or **NetCDF** file formats if the **Ostrich** is configured accordingly (see `Type Conversions`), 
+    - run without prompting for user intervention,
+    - produce outputs that can be reliably parsed.
+
+
+- Implement multiple *deterministic*, *heuristic* and *smaplers* algorithms (see table 1 in the user's manual). For instance, while the *Levenberg-Marquardt* algorithm is tailored to non-linear calibration problems, the *Pareto Archive Dynamically Dimensioned Search* and the *Simple Multi-Objective Optimization Test Heuristic* are suitable for multi-objective optimization or multi-criteria calibration. Additionaly, sampling-based algorithm such as *Generalized Likelihood Uncertainty Estimation*, *Rejection Sampling* and *Metropolis-Hastings Markov Chain Monte Carlo* are based for uncertainty-based calibration. 
+- Estimate multiple *regression statistics and diagnostics* when used for model calibration via a *weighted sum of squared errors* approach (see table 2 in the user's manual).
+
+### Input files
+**Ostrich** requires to set up the `ostIn.txt` input file and to create *template model input files*.   
+
+#### The `ostIn.txt` input file 
+The following briefly explain the groups that form the input file. Note that with few exceptions, the format for a line of input in the file is `<variable> <value>`.
+1. *basic configuration group*: Some of the configuration variables are mandatory and is the only one group that does not need a `Begin...` and `End...` group tags. This means that this group variables can be placed anywhere within the file. The configuration variables are:
+- `ProgramType`: Indicate the algorithm to be used to perform calibration or optimization.
+- `ModelExecutable`: Indicate the name and path of model executable. 
+- `ModelSubdir`: When running in parallel, a working subdirectory must be especified to prevent parallel runs from clobbering each other's input and output files.
+- `ObjectiveFunction`: Objective function to be optimized, either `WSSE` (Weighted Sum of Square Errors) calibration or `GCOP` (General-purpose Constrained Optimization Platform).
+- `PreserveBestModel`: A user supply script that is run by **Ostrich** every time a new best parameter set is discovered. 
+- `PreserveModelOutput`: If `yes`, **Ostrich** will make copies of files associated with each model run and preserved files will be stored in directories named `runNNN` when `NNN` is a counter that increases after each model run. Alternatively, users can provide the name of a script that will run to preserve certain model run information. **Ostrich** will pass some argument to the user-defined script (see section 2.3 of user's manual). 
+- `OstrichWarmStart`: If set to `yes`, **Ostrich** will read the contents of any previously created `OstModel` output files and use the entries therein to restart the optimization or calibration exercise. 
+- `NumDigitsOfPrecision`: Specifies the precision of values written by **Ostrich** output files.
+- `TelescopingStrategy`: If selected (see listing 3 in user's manual) **Ostrich** will cause parameter bounds to become increasingly smaller as an optimization or calibration proceeds.
+- `RandomSeed`: Used to control the random seed when generating random numbers.
+- `OnObsError`: Used to control how **Ostrich** behaves when a model fails to generate all of the expected output for a `WSSE` calibration. If equal to `quit`, **Ostrich** will abort if it ever fails to parse an observation from user-specified output files. If set to a value, **Ostrich** will use the value as a placeholder observation value.
+- `CheckSensitivities`: If it is set to `yes`, **Ostrich** will perform a pre-calibration step to calculate parameter sensitivies. 
+- `SuperMUSE`: If it is set to `yes`, **Ostrich** will interface with **EPA** SuperMUSE tasker-client approach to parallel computing.
+- `OstrichCatching`: If it is set to `yes`, **Ostrich** will examine `OstModel` output files prior to running a model configuration to see if the parameter set has already been evaluated.- `BoxCoxTransformation`: If set to a value other than `1`, **Ostrich** will apply a *Box-Cox* power transformation on each calibration residual. The value is used as the exponent for the transformation.
+- `ModelOutputRedirectionFile`: This variable allows users to override the default name (i.e. `OstExeOut.txt`) of the file where **Ostrich** will redirect model output that would normally be displayed on a console screen. 
+
+2. *file pairs group*: A file pair consist of a *template file* and a corresponding *input file*. The contents of the *template file* should be identical to the paired model *input file* except that values of optimization (or calibration) parameters are placed placed with unique parameter names defined in the *Parameter section*. During **Ostrich** execution, this will use the *template files* to create syntactically correct model *input files* in preparation of running model at different parameter values. `BeginFilePairs` and `EndFilePairs` are parsing tags to define this group. Pairs are introduced as `<template1><sep><inputfile1>`.
+
+3. *extra files group*: Extra files are model input files not used by **Ostrich**, but required for proper execution of the model. `BeginExtraFiles` and `EndExtraFiles` are parsing tags to define this group. Files are introduced as `<otherinputfile1>`.
+
+4. *extra directories group*: Extra directories are directories containing model input files not used by **Ostric**, but required for proper execution of the mode. `BeginExtraDirs` and `EndExtraDirs` are parsing tags to define this group. Directories are introduced as `<inputdir1>`.
+
+5. *real-value parameters group*: This configuration group describes the parameters to be calibrated or optimized. `BeginParams` and `EndParams` are parsing tags to define this group. Parameters are introduced as `<parameter_name1> <initial_value1> <lower_bound1> <upper_bound1> <input_transf1> <ostrich_transf1> <output_transf1> <format1>`. Transformation can take the following values: `none`, `log10` and `ln`. The format value is used to write into model input file following an specific format required by model. 
+
+6. *integer-value parameters group*: This configuration group describes the parameters to be calibrated or optimized that can take only integer values.  `BeginIntegerParams` and `EndIntegerParams` are parsing tags to define this group. Parameters are introduced as `<parameter_name1> <initial_value1> <lower_bound1> <upper_bound1>`.
+
+7. *combinatorial parameters group*: This configuration group describes the parameters to be calibrated or optimized that can take on a discrete set of real, integer or string values.  `BeginCombinatorialParams` and `EndCombinatorialParams` are parsing tags to define this group. Parameters are introduced as `<parameter_name1> <type1> <initial_value1> <value1> <value2> ... <valuen>`. `type` can be either `real`, `integer` or `string`.
+
+8. *tied parameters group*: This configuration group describes the parameters which are computed as a function of integer, real of combinatorial parameter values. They may also be functions of other tied parameters.  `BeginTiedParams` and `EndTiedParams` are parsing tags to define this group. Parameters are introduced as `<parameter_name1> <number_of_param1> <pname1> <pname2> ... <pnamen> <type1> <type2> ... <type_data>`. `type` is the type of functional relationship and can be either `linear`, `exp`, `log`, `dist`, `wsum`, `ratio` or `constant`. `type_data` depends of the function `type` and on the `number_of_param`.
+
+9. *special parameters (pre-emption) group*: This configuration group describes the special parameters that are cost and constrain thresholds that are tracked by selected algorithms.  `BeginSpecialParams` and `EndSpecialParams` are parsing tags to define this group. Parameters are introduced as `<parameter_name1> <initial_value1> <type1> <con_type1> <con_name1>`. `type` is the type of pre-emption parameter: `BestCost` or `BestConstraint`. `con_type` can be `upper` or `lower` if `type` is `BestConstraint`. `con_name` is the name of the constraint which are defined in the *constraints group*.
+
+10. *initial parameters group*: This configuration group describes initial parameter set that allow to introduce prior information (such as previous optimization results) improving the process.  `BeginInitParams` and `EndInitParams` are parsing tags to define this group. Parameters are introduced as `<p1,1> <p2,1> ... <pn,1<`. In `pi,j` *j* is the j-initial value of the parameter *i*. Note that this set up must follow the order in the *parameters group*. 
+
+11. *parameters correction group*: This configuration group allow users to interface **Ostrich** with an external program or script that makes adjustments to a candidate parameter set that has been calculated by **Ostrich** but not yet evaluated.  `BeginParameterCorrection` and `EndParameterCorrection` are parsing tags to define this group. `BeginCorrections` and `EndCorrections` are tags to define the parameter corrections. 
+
+12. *observations group*: This configuration group allow users to list the observations names, values and weights, along with parsing instructions to reading simulated equivalent observations from model output files.  `BeginObservations` and `EndObservations` are parsing tags to define this group. This file is set up as `<name1> <value1> <wgt1> <file1> <sep1> <key1> <line1> <col1> <tok1> <aug1> <grp1>`. 
+
+13. *response variables group*: This configuration group allow users to define the response variables when performing optimization. **Ostrich** will read the response variable from model output files prior to evaluating costs and constraints.  `BeginResponseVars` and `EndResponseVars` are parsing tags to define this group. 
+
+14. *tied-response variables group*: This configuration group allow users to define tied-response variables which are variables whose values are computed by **Ostrich** as function of one or more response variables and/or parameters. `BeginTiedResVars` and `EndTiedResVars` are parsing tags to define this group.  
+
+15. *type conversion group*: Models that generate input or output files in *MS Access* or *netcdf* format can be interfaced with  **Ostrich** via specification of a corresponding `TypeConversion` group. Outputs specified in the `TypeConversion` group are extracted into text-based files that can then be processed into observations (see Observation group) or Response Variables (see Response Variables group). `BeginTypeConversion` and `EndTypeConversion` are parsing tags to define this group.   
+
+16. *search algorithms group*: Each algorithm (see table 1 in user's manual) has its own configuration group, wherein the users can specify the values for various algorithm control variables. Additional optional configuration variables and groups such as *warm start*, *pre-emption*, *parameter correction*, *list of initial parameters*, *math and stats* and *line search*, may also be available for a given algorithm. 
+
+17. *uncertainty-based search algorithms group*: Several of the search algorithms implemented in **Ostrich** are designed to enumerate parameter probability distributions or behavioral parameter sets. Such algorithms are referred to as being *uncertainty-based* since they are not just concerned with identifying a single globally optimal parameter set. Each algorithm (see table 1 in user's manual) has its own configuration group. 
+
+18. *multi-objective search algorithms group*: These algorithms seek to identify non-dominated solutions representing the trade-off curve (i.e. pareto front) among conflicting objectives. These objectives can reflect a multi-criteria calibration exercise or a multi-objective optimization problem. 
+
+19. *math and stats group*: These group describes the *finite difference method* employed by algorithms (see table 1 in user's manual). If calibration is performed, additional variables in this group are used to request various statistical and diagnostic output. `BeginMathAndStats` and `EndMathAndStats` are parsing tags to define this group.   
+
+20. *line search group*: This group is used for configuration of the one-dimensional search algorithm that underlines unconstrained numerical optimization procedure (see table no. 1 in user's manual). `Begin1dSearch` and `End1dSearch` are parsing tags to define this group.   
+
+21. *general-purpose constrained optimization platform (GCOP) group*: In this group users can specify the *response variable* (or variables if performing multiobjective optimization or multi-criteria calibration) that will serve as the *cost function* (or functions) for general constrained optimization platform. Each *cost function* identifies a single response variable or tied response variable that represents a *system cost* to be minimized by the optimizer. The overall *GCOP* objective is a combination of the *system cost* and a *penalty function*, which accounts for the cost of all constraint violations.`Begin1dSearch` and `End1dSearch` are parsing tags to define this group.    
+
+
+22. *constraints group*: In this group the user supplies information about various constraints that are to be placed on a general constrained optimization problem. Any number and combination of constraints are supported.  `BeginConstraints` and `EndConstraints` are parsing tags to define this group.   
+
+### Running **Ostrich**
+**Ostrich** can run in *serial* or *parallel* mode. The **Ostrich** executable, `Ostrich` in **Linux**, must be in a directory along with `ostIn.txt`, model *template files* and the *extra model input files*. Remember that **Ostrich** uses the model *template files* to create model input files. The fundamental setup of `ostIn.txt` for:
+
+1. Weighted Sum of Squared Errors (WSSE) Calibration: Several groups and variables must be setup in the `ostIn.txt` including `ObjectiveFunction` (set to `WSSE`), `ProgramType`, `ModelExecutable`, `FilePairs`, `Parameters`, `Observations` and `MathAndStats`. 
+
+2. General Constrained Optimization Platform (GCOP): Several groups and variables must be setup in the `ostIn.txt` including `ObjectiveFunction` (set to `GCOP`), `ProgramType`, `ModelExecutable`, `FilePairs`, `Parameters`, `ResponseVariables`,  `GCOP` and `Constraints`. 
+
+To run in *serial* mode in **Linux**:
+
+    `<path>/Ostrich`
+
+To run in multi-core *parallel* model in **Linux**:
+
+
+    `mpirun -n 12 <path>/Ostrich`
+
+where `mpirun` is a launcher provided by **MPI** libraries and `-n 12` is an `mpirun` argument that indicates the number of processors (12) used to run `Ostrich`. If `Ostrich` want to be run across multiple nodes (like in a *HPC* infrastructure), other arguments like `-hostfile` and `-rankfile` might be needed. 
+
+**Ostrich** execution can be aborted after creating the file `OstQuit.txt`.
+
+Certain search **Ostrich** algorithms allow an *warm start* and can be restarted from previous runs upon the variable `OstrichWarmStart` is set to `yes` in `OstIn.txt`.
+
+### **Ostrich** output files
+Upon completion, **Ostrich** will generated several files. If executed in parallel mode, each processor will create its own set of output files, where `N` indicate the processor id. In serial mode, `N=0`, the id of the master core. The files created are:
+
+1. `OstOutputN.txt`: The main output file, it contains an optimization (or regression) record along with statistical output.
+2. `OstErrorsN.txt`: Any errors or warning encountered by processors `N`.  
+3. `OstModelN.txt`: A sequential record of every model run evaluated by processor `N`.
+4. `OstExeOut.txt`: The standard output and errors of the model runs are directed to this file. 
+5. `OstStatusN.txt`: This file is periodically updated with the current progress of the selected search algorithm.
+6. `OstGcopOut`: This file keeps track of the cost and constraint information for each model evaluation when the `GCOP` is used.  
+7. `OstNonDomSolutions`: When a multi-objective search is performed, this file is periodically updated with the current list of non-dominated solutions that have been discovered by the selected search algorithm. 
+
+
+### General steps to execute **Ostrich**
 The following are some simple steps to use **Ostrich** for model calibration.
 
 1. Download and compile [Ostrich](https://www.civil.uwaterloo.ca/envmodelling/Ostrich.html).
