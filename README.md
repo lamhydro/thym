@@ -45,58 +45,62 @@ This is the control or steering file for **thym**. This file has the following s
 
 
 Note that:
-- In *row 10*: The user can chose the method to estimated the daily *potential evapotranspiration* among the following options: *obs* [observed precomputed values introduced through the `meteo.in` file], *hamon0* [Hamon method version 0], *hamon1* [Hamon method version 1 (more standard)] and *pen-mon* [Penman-monteith method].  
+- In *row 10*: The user can chose the method to estimated the daily *potential evapotranspiration* among the following options: *obs* [observed precomputed values introduced through the `meteo.in` file], *hamon0* [Hamon method version 0], *hamon1* [Hamon method version 1 (more standard)] and *pen-mon* [Penman-Monteith method].  
 
 - In *row 14*: This row contains the parameters corresponding to the model in *row 15*. According to the model, the parameters are as follow:
 
 #### GR4J
 
-|COL|PARAMETER|MEANING|
-|--------|--------|--------------------------------------------------------------------|
-| col 1  | x1     | Maximum capacity of the production store [mm]                      |
-| col 2  | x2     | Groundwater recharge coefficient                                   |
-| col 3  | x3     | One-day ahead maximun capacity of the routing store [mm]           |
-| col 4  | x4     | Time base of unit hydrograph UH1                                   |
-| col 5  | trs    | Air temperature above which the precipitation is all rainfall [oC] |
-| col 6  | tmlt   | The base temperature above which snow melt is allowed [oC]         |
-| col 7  | sno50  | The depth of snow when the basin is 50% covered by snow [mm]       |
-| col 8  | sno100 | The shreshold depth of snow, above which there is 100% cover [mm]  |
-| col 9  | ls     | Snow temperature lag factor                                        |
-| col 10 | bmlt6  | Melt factor on June 21 [mm H2O/day-oC]                             |
-| col 11 | bmlt12 | Melt factor on December 21 [mm H2O/day-oC]                         |
+|COL|PARAMETER|MEANING|RANGE|
+|--------|--------|--------------------------------------------------------------------|----------|
+| col 1  | x1     | Maximum capacity of the production store [mm]                      |100; 1200 |
+| col 2  | x2     | Groundwater recharge coefficient                                   |-5; 3     |
+| col 3  | x3     | One-day ahead maximun capacity of the routing store [mm]           |20; 300   |
+| col 4  | x4     | Time base of unit hydrograph UH1                                   |1.1; 2.9  |
+| col 5  | pa     | % of effective precipitation routed by UH1                         |0.9       |
+| col 6  | pb     | % of effective precipitation routed by UH2                         |0.1       |
+| col 7  | trs    | Air temperature above which the precipitation is all rainfall [oC] |-         |
+| col 8  | tmlt   | The base temperature above which snow melt is allowed [oC]         |-         |
+| col 9  | sno50  | The depth of snow when the basin is 50% covered by snow [mm]       |-         |
+| col 10  | sno100 | The shreshold depth of snow, above which there is 100% cover [mm] |-         |
+| col 11  | ls     | Snow temperature lag factor                                       |-         |
+| col 12 | bmlt6  | Melt factor on June 21 [mm H2O/day-oC]                             |-         |
+| col 13 | bmlt12 | Melt factor on December 21 [mm H2O/day-oC]                         |-         |
  
-Note that the parameters *x1*, *x2*, *x3* and *x4* are often subjected to calibration. The others parameters belong to the *snow model* and are not relevant in tropical basins modelling.
+Note that the parameters *x1*, *x2*, *x3* and *x4* are often subjected to calibration. The parameters *pa* and *pb* take constant values. The others parameters belong to the *snow model* and are not relevant in tropical basins modelling.
 
 #### HBV
 
-|COL|PARAMETER|MEANING|
-|--------|--------|-|
-| col 1  | k2     | |
-| col 2  | k1     | |
-| col 3  | k0     | |
-| col 4  | degd   | |
-| col 5  | degw   | |
-| col 6  | ttlim  | |
-| col 7  | perc   | | 
-| col 8  | beta   | |
-| col 9  | lp     | |
-| col 10 | fcap   | |
-| col 11 | hl1    | |
-| col 12 | maxbas | |
+|COL|PARAMETER|MEANING|RANGE|
+|--------|--------|-------------------------------------------------------|----------|
+| col 1  | k2     | Withdrawal rate from deep layer [days]                |10; 20000 |
+| col 2  | k1     | Withdrawal rate for shallow layer overflow [days]     |1; 100    |
+| col 3  | k0     | Withdrawal rate from shallow layer (interflow) [days] |0.5; 20   |
+| col 4  | degd   | Degree day factor (snowmelt rate) [mm/day oC]         |0; 20     |
+| col 5  | degw   | Base temperature above which melt occur [oC]          |-3; 3     |
+| col 6  | ttlim  | Temperature threshold below which freezing occurs [oC]|-3; 3     |
+| col 7  | perc   | Percolation rate into deep layer [mm/day]             |0; 100    | 
+| col 8  | beta   | Distribution of soil stores [-]                       |0; 7      |
+| col 9  | lp     | Limiting soil moisture at which PET takes place [-]   |0.3; 1    |
+| col 10 | fcap   | Maximum soil moisture storage [mm]                    |10; 2000  |
+| col 11 | hl1    | Maximum shallow layer storage [mm]                    |0; 100    |
+| col 12 | maxbas | Length of hydrograph routing transformation [hour]    |24; 120   |
 
 
 #### HYMOD
 
-|COL|PARAMETER|MEANING|
-|--------|-------|--------------------------------------------------------------------|
-| col 1  | ks    | Slowflow routing tank's rate parameter - Range [0, 1]              |
-| col 2  | kq    | Quickflow routing tanks' rate parameter - Range [0, 1]             |
-| col 3  | ddf   | Degree day factor - Range [ 0, 2]                                  |
-| col 4  | tb    | Base temperature to calculate melt - Range [-5, 5]                 |
-| col 5  | tth   | Temperature threshold - Range [-5, 5]                              |
-| col 6  | alpha | Quick/slow split parameter - Range [0, 1]                          |
-| col 7  | b     | Scaled distribution function shape parameter - Range [0, 2]        |
-| col 8  | huz   | Maximum height of soil moisture accounting tank - Range [0, Inf]   |
+|COL|PARAMETER|MEANING|RANGE|
+|--------|-------|------------------------------------------------|----------------------|
+| col 1  | ks    | Slowflow routing tank's rate parameter         |0; 1                  |
+| col 2  | kq    | Quickflow routing tanks' rate parameter        |0; 1                  |
+| col 3  | ddf   | Degree day factor                              |0; 2                  |
+| col 4  | tb    | Base temperature to calculate melt             |-5; 5                 |
+| col 5  | tth   | Temperature threshold                          |-5; 5                 |
+| col 6  | alpha | Quick/slow split parameter                     |0; 1                  |
+| col 7  | b     | Scaled distribution function shape parameter   |0; 2                  |
+| col 8  | huz   | Maximum height of soil moisture accounting tank|0; Inf                |
+| col 9  | nq    | Number of quickflow routing tanks              |1; Inf (typically < 3)|
+| col 10 | kv    | Vegetation adjustment to PE                    |0; 2                  |
 
 ### `meteo.in` file 
 This file contains the *meterological data* recorded within the catchment. This file has the following columns:

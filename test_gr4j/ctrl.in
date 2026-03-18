@@ -11,4 +11,4 @@ hamon1                          ! PET method ['obs', 'hamon0', 'hamon1', 'pen-mo
 0.2 10.0                        ! [Albedo] [Altitute at wich wind speed is measured (usally 10 m overground)]  
 
 gr4j                            ! Model's name 
-650.923868816329 -3.91936142662807 68.3037161810372 1.15750566325813 -2.83991936040818 -1.18136487423606 0.999985545799455 404.525758356482 0.999995301979873 0.772937105715276 0.905249612044592                    ! Models parameters: param1 param2 param3 param4 [Snow model parameters]
+650.923868816329 -3.91936142662807 68.3037161810372 1.15750566325813 0.9 0.1 -2.83991936040818 -1.18136487423606 0.999985545799455 404.525758356482 0.999995301979873 0.772937105715276 0.905249612044592                    ! Models parameters: x1 x2 x3 x4 pa pb [Snow model parameters] 

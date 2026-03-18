@@ -115,31 +115,31 @@
         {
             for (t = 0; t < uh1_l; t++)
             {
-                mfxv->qa[i] += *(uh1 + t) * mfxv->pr[i-t] * PA; 
+                mfxv->qa[i] += *(uh1 + t) * mfxv->pr[i-t] * modp->pa; 
             }
             for (t = 0; t < uh2_l; t++)
             {
-                mfxv->qb[i] += *(uh2 + t) * mfxv->pr[i-t] * PB;
+                mfxv->qb[i] += *(uh2 + t) * mfxv->pr[i-t] * modp->pb;
             }
         } else if (i + 1 >= uh1_l && i + 1 < uh2_l)
         {
             for (t = 0; t < uh1_l; t++)
             {
-                mfxv->qa[i] += *(uh1 + t) * mfxv->pr[i-t] * PA; 
+                mfxv->qa[i] += *(uh1 + t) * mfxv->pr[i-t] * modp->pa; 
             }
             for (t = 0; t < i + 1; t++)
             {
-                mfxv->qb[i] += *(uh2 + t) * mfxv->pr[i-t] * PB;
+                mfxv->qb[i] += *(uh2 + t) * mfxv->pr[i-t] * modp->pb;
             }
         } else if (i + 1 < uh1_l)
         {
             for (t = 0; t < i + 1; t++)
             {
-                mfxv->qa[i] += *(uh1 + t) * mfxv->pr[i-t] * PA; 
+                mfxv->qa[i] += *(uh1 + t) * mfxv->pr[i-t] * modp->pa; 
             }
             for (t = 0; t < i + 1; t++)
             {
-                mfxv->qb[i] += *(uh2 + t) * mfxv->pr[i-t] * PB;
+                mfxv->qb[i] += *(uh2 + t) * mfxv->pr[i-t] * modp->pb;
             }
         }
        

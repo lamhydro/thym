@@ -206,10 +206,10 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, modparam *modp, evapot *evp){
         fgets(line, sizeof(line), file);
         #if MODEL == 1 // GR4J
             /* float dummy; */
-		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &modp->x1, &modp->x2, &modp->x3, &modp->x4, &modp->trs, &modp->tmlt, &modp->sno50, &modp->sno100, &modp->ls, &modp->bmlt6, &modp->bmlt12);
+		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &modp->x1, &modp->x2, &modp->x3, &modp->x4, &modp->pa, &modp->pb, &modp->trs, &modp->tmlt, &modp->sno50, &modp->sno100, &modp->ls, &modp->bmlt6, &modp->bmlt12);
             /* modp->x4 = floatToNextInt(dummy); // Transform a float to next smallest int */
             modp->nq = 0.0;  // Not used in GR4J
-            printf("x1 = %lf, x2 = %lf, x3 = %lf, x4 = %lf, trs = %lf, tmlt = %lf, sno50 = %lf, sno100 = %lf, ls = %lf, bmlt6 = %lf, bmlt12 = %lf\n", modp->x1, modp->x2, modp->x3, modp->x4, modp->trs, modp->tmlt, modp->sno50, modp->sno100, modp->ls, modp->bmlt6, modp->bmlt12);
+            printf("x1 = %lf, x2 = %lf, x3 = %lf, x4 = %lf, pa = %lf, pb = %lf, trs = %lf, tmlt = %lf, sno50 = %lf, sno100 = %lf, ls = %lf, bmlt6 = %lf, bmlt12 = %lf\n", modp->x1, modp->x2, modp->x3, modp->x4, modp->pa, modp->pb, modp->trs, modp->tmlt, modp->sno50, modp->sno100, modp->ls, modp->bmlt6, modp->bmlt12);
 
 /*             // Read snow model parameters */
             /* fgets(line, sizeof(line), file); */
@@ -219,7 +219,6 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, modparam *modp, evapot *evp){
                 /* printf("trs = %lf, tmlt = %lf, sno50 = %lf, sno100 = %lf, ls = %lf, bmlt6 = %lf, bmlt12 = %lf\n", snowp->trs, snowp->tmlt, snowp->sno50, snowp->sno100, snowp->ls, snowp->bmlt6, snowp->bmlt12); */
             /* #else //  */
             /* #endif */
-
 
         #elif MODEL == 2 // HBV
                          
@@ -233,9 +232,9 @@ int read_ctrl(char *ctrlf, ctrlbasic *ctrlb, modparam *modp, evapot *evp){
 
         #elif MODEL == 3 // HYMOD
                         
-		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf", &modp->ks, &modp->kq, &modp->ddf, &modp->tb, &modp->tth, &modp->alpha, &modp->b, &modp->huz);
-            modp->nq = 3; // number of quickflow reservoirs
-            modp->kv = 1.0; // vegetation parameter
+		    sscanf(line, "%lf %lf %lf %lf %lf %lf %lf %lf %d %lf", &modp->ks, &modp->kq, &modp->ddf, &modp->tb, &modp->tth, &modp->alpha, &modp->b, &modp->huz, &modp->nq, &modp->kv);
+            /* modp->nq = 3; // number of quickflow reservoirs */
+            /* modp->kv = 1.0; // vegetation parameter */
             modp->cpar = modp->huz / (1.0 + modp->b); // max capacity of soil moisture tank
             printf("ks = %lf, kq = %lf, ddf = %lf, tb = %lf, tth = %lf, alpha = %lf, b = %lf, huz = %lf, nq = %d, kv = %lf, cpar = %lf\n", modp->ks, modp->kq, modp->ddf, modp->tb, modp->tth, modp->alpha, modp->b, modp->huz, modp->nq, modp->kv, modp->cpar);
 

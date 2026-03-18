@@ -14,7 +14,8 @@ test_hymod/*
 !test_hymod/meteo.in
 
 test_gr4j_ost/*
-!test_gr4j_ost/ostIn_Unix.txt
+!test_gr4j_ost/ostIn_Serial.txt
+!test_gr4j_ost/ostIn_Parallel.txt
 !test_gr4j_ost/ostIn.txt
 !test_gr4j_ost/ctrl.in.tlp
 !test_gr4j_ost/ctrl.in

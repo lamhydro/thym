@@ -85,6 +85,8 @@ typedef struct {
         double x2;          /* Groundwater recharge coefficient */
         double x3;          /* One-day ahead maximun capacity of the routing store [mm] */
         double x4;          /* Time base of unit hydrograph UH1 */
+        double pa;          /* % of effective precipitation routed by UH1 */
+        double pb;          /* % of effective precipitation routed by UH2 */
         double trs;         /* Air temperature above which the precipitation is all rainfall [oC] */
         double tmlt;        /* The base temperature above which snow melt is allowed [oC] */
         double sno50;       /* The depth of snow when the basin is 50% covered by snow [mm] */
@@ -94,21 +96,20 @@ typedef struct {
         double bmlt12;      /* Melt factor on December 21 [mm H2O/day-oC] */
         unsigned int nq;    /* Not used in GR4J */
  
-    
     #elif MODEL == 2 // HBV
     
-        double k2; 
-        double k1; 
-        double k0; 
-        double degd;
-        double degw; 
-        double ttlim; 
-        double perc; 
-        double beta; 
-        double lp; 
-        double fcap;
-        double hl1;
-        int maxbas;
+        double k2;          /* Withdrawal rate from deep layer [days] */
+        double k1;          /* Withdrawal rate for shallow layer overflow [days] */
+        double k0;          /* Withdrawal rate from shallow layer (interflow) [days] */
+        double degd;        /* Degree day factor (snowmelt rate) [mm/day oC] */
+        double degw;        /* Base temperature above which melt occur [oC] */
+        double ttlim;       /* Temperature threshold below which freezing occurs [oC] */
+        double perc;        /* Percolation rate into deep layer [mm/day] */
+        double beta;        /* Distribution of soil stores [-] */
+        double lp;          /* Limiting soil moisture at which PET takes place [-] */
+        double fcap;        /* Maximum soil moisture storage [mm] */
+        double hl1;         /* Maximum shallow layer storage [mm] */
+        int maxbas;         /* Length of hydrograph routing transformation [hour]*/
         unsigned int nq;         // Not used in HBV
     
     #elif MODEL == 3 // HYMOD

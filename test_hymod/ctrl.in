@@ -10,5 +10,5 @@ GUADALUPE RIVER NR SPRING BRANCH, TX    ! Watershed name and hydrometric station
 hamon1                         ! PET method ['obs', 'hamon0', 'hamon1', 'pen-mon']
 0.2 10.0                        ! [Albedo] [Altitute at wich wind speed is measured (usally 10 m overground)]  
 
-hymod                                   ! Model's name 
-0.5 0.5 1.0 -1.0 2.5 0.5 1.0 1.0        ! Model parameters: ks  kq  ddf  tb  tth  alpha  b   huz    
+hymod                                         ! Model's name 
+0.5 0.5 1.0 -1.0 2.5 0.5 1.0 1.0 3 1.0        ! Model parameters: ks  kq  ddf  tb  tth  alpha  b   huz  nq kv

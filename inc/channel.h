@@ -23,8 +23,8 @@
 #include <stdlib.h>
 #include <math.h>  
 
-#define PA 0.9 // Proportion of flow toward the routing store
-#define PB 0.1 // Proportion of flow toward ...
+// #define PA 0.9 // Proportion of flow toward the routing store
+// #define PB 0.1 // Proportion of flow toward ...
                
 #if MODEL == 1 // GR4J
                
