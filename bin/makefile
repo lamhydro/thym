@@ -11,7 +11,7 @@ BINDIR2 = bin
 BASENAME = thym
 
 # Define other varible
-MODEL = 3
+MODEL = 2
 
 # Setup rainfall-runoff model name
 ifeq ($(MODEL),1)

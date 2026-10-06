@@ -37,24 +37,70 @@ double nash_sutcliffe(const unsigned int n, const double *obs, const double *sim
     return 1.0-(num/den);
 }
 
+/*
+ * Log Nash-Sutcliffe efficiency
+ */
+double log_nash_sutcliffe(const unsigned int n,
+                          const double *obs,
+                          const double *sim)
+{
+    unsigned int i;
+    unsigned int nvalid = 0;
+
+    double log_obs_mean = 0.0;
+    double num = 0.0;
+    double den = 0.0;
+
+    /* Calculate mean of log-transformed observations */
+    for (i = 0; i < n; i++) {
+        if (obs[i] > 0.0 && sim[i] > 0.0) {
+            log_obs_mean += log(obs[i]);
+            nvalid++;
+        }
+    }
+
+    if (nvalid == 0) {
+        return NAN;
+    }
+
+    log_obs_mean /= (double)nvalid;
+
+    /* Calculate log-NSE */
+    for (i = 0; i < n; i++) {
+        if (obs[i] > 0.0 && sim[i] > 0.0) {
+            double log_obs = log(obs[i]);
+            double log_sim = log(sim[i]);
+
+            num += (log_sim - log_obs) * (log_sim - log_obs);
+            den += (log_obs_mean - log_obs) *
+                   (log_obs_mean - log_obs);
+        }
+    }
+
+    if (den == 0.0) {
+        return NAN;
+    }
+
+    return 1.0 - (num / den);
+}
 
 /*
  * Log Nash-Sutcliffe efficiency
  */
-double log_nash_sutcliffe(const unsigned int n, const double *obs, const double *sim){
+/* double log_nash_sutcliffe(const unsigned int n, const double *obs, const double *sim){ */
 
-    double log_obs_mean = log(mean_double(n, obs));
+    /* double log_obs_mean = log(mean_double(n, obs)); */
 
-    unsigned int i;
-    double num = 0;
-    double den = 0;
-    for(i = 0; i < n; i++){
-       num += (log(sim[i])-log(obs[i])) * (log(sim[i])-log(obs[i]));
-       den += (log_obs_mean-log(obs[i])) * (log_obs_mean-log(obs[i]));
-    }
+    /* unsigned int i; */
+    /* double num = 0; */
+    /* double den = 0; */
+    /* for(i = 0; i < n; i++){ */
+       /* num += (log(sim[i])-log(obs[i])) * (log(sim[i])-log(obs[i])); */
+       /* den += (log_obs_mean-log(obs[i])) * (log_obs_mean-log(obs[i])); */
+    /* } */
 
-    return 1.0-(num/den);
-}
+    /* return 1.0-(num/den); */
+/* } */
 
 
 /*
